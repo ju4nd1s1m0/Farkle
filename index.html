@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Farkle">
 <title>Farkle</title>
 <style>
@@ -2055,7 +2055,7 @@ $('#newBtn').addEventListener('click', () => {
     const tbg = document.getElementById('tableBG').getBoundingClientRect();
     const hasSel = (() => { try { return document.querySelector('html:has(body)') !== null; } catch(e){ return false; } })();
     box.textContent =
-      'BUILD: band-diag-1' +
+      'BUILD: band-diag-2 (statusbar=default)' +
       '\ninnerH: ' + innerHeight + '  innerW: ' + innerWidth +
       '\nscreen: ' + screen.width + 'x' + screen.height +
       '\nvisualVp: ' + (window.visualViewport ? Math.round(visualViewport.height) : 'n/a') +
