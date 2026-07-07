@@ -7,6 +7,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Farkle">
 <title>Farkle</title>
 <style>
@@ -593,8 +595,8 @@ body[data-table="wood"] .iconbtn,body[data-table="felt"] .iconbtn,body[data-tabl
         <div class="srow"><div class="slab">Four of a kind + a pair</div>
           <div class="seg" data-k="fourpair"><button data-v="0">Off</button><button data-v="1000">1000</button><button data-v="1500">1500</button></div></div>
       </div>
-      <div class="ovbtns"><button class="btn-sec" id="settingsClose">Close</button></div>
     </div>
+    <button class="btn-sec" id="settingsClose">Close</button>
   </div>
 
   <div class="overlay" id="rulesOv">
