@@ -371,6 +371,9 @@ body[data-table="wood"] .iconbtn,body[data-table="felt"] .iconbtn,body[data-tabl
 }
 .spop.on{opacity:1;transform:translateY(-50%) scale(1)}
 .spop.out{opacity:0;transform:translateY(calc(-50% - 10px)) scale(.9)}
+.spop.below{transform:translateY(0) scale(.8)}
+.spop.below.on{opacity:1;transform:translateY(0) scale(1)}
+.spop.below.out{opacity:0;transform:translateY(-10px) scale(.9)}
 .spop.neg{color:#ff8f7d}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -2154,10 +2157,22 @@ function scorePop(text, negative, anchorEl){
   const el = document.createElement('div');
   el.className = 'spop' + (negative ? ' neg' : '');
   el.textContent = text;
-  el.style.top = (r.top + r.height / 2) + 'px';
-  if (S.cur === 0) el.style.right = (innerWidth - r.left + 6) + 'px';
-  else el.style.left = (r.right + 6) + 'px';
   document.body.appendChild(el);
+  const w = el.offsetWidth;
+  const fitsSide = S.cur === 0
+    ? (r.left - 6 - w) >= 4
+    : (r.right + 6 + w) <= innerWidth - 4;
+  if (fitsSide){
+    el.style.top = (r.top + r.height / 2) + 'px';
+    if (S.cur === 0) el.style.right = (innerWidth - r.left + 6) + 'px';
+    else el.style.left = (r.right + 6) + 'px';
+  } else {
+    // wide numbers: pop up below the scoreboard, aligned under that player's column
+    const bb = document.querySelector('.board').getBoundingClientRect();
+    el.classList.add('below');
+    el.style.top = (bb.bottom + 4) + 'px';
+    el.style.left = Math.max(4, Math.min(innerWidth - w - 4, r.left + r.width / 2 - w / 2)) + 'px';
+  }
   requestAnimationFrame(() => el.classList.add('on'));
   setTimeout(() => {
     el.classList.remove('on');
