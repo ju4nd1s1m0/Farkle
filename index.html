@@ -32,11 +32,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overscroll-behavior:none}
-html{
-  background:#1a0f05;
-  background-image:linear-gradient(rgba(0,0,0,.3), rgba(0,0,0,.3)), url('table-wood.jpeg');
-  background-size:cover;background-position:center;
-}
+html{background:#000}
 body{
   font-family:var(--font);
   background:transparent;
@@ -188,17 +184,6 @@ body[data-table="black"] #tableBG{background:#131316}
 body[data-table="oak"]{background:transparent}
 body[data-table="felt"]{background:transparent}
 body[data-table="black"]{background:transparent}
-html:has(body[data-table="oak"]){
-  background:#b59468;
-  background-image:linear-gradient(rgba(0,0,0,.22), rgba(0,0,0,.22)), url('table-oak.jpeg');
-  background-size:cover;background-position:center;
-}
-html:has(body[data-table="felt"]){
-  background:#14883f;
-  background-image:linear-gradient(rgba(0,0,0,.28), rgba(0,0,0,.28)), url('table-felt.jpeg');
-  background-size:cover;background-position:center;
-}
-html:has(body[data-table="black"]){background:#131316;background-image:none}
 body[data-table="black"] .board{
   --sbt:#f2f2f5;--sbm:rgba(242,242,245,.9);--sbf:rgba(242,242,245,.72);
   --sbl:rgba(255,255,255,.2);--sbg:#f2c15c;--sp0:#93d2f2;--sp1:#ff9d8a;

@@ -39,7 +39,7 @@ Each table theme looks for a photo named `table-<theme>.jpg` or `.jpeg` (`oak`, 
 
 ## Known iOS limitation
 
-iOS sizes standalone web-app windows one status-bar-height shorter than the physical screen. This build uses the immersive mode (content under the status bar), which leaves a thin strip at the very bottom that page elements cannot paint; it's rendered with the table photo via the root background so it blends with the scene. This is a platform constraint, not a bug in the game.
+iOS sizes standalone web-app windows one status-bar-height shorter than the physical screen. This build uses the immersive mode (content under the status bar), which leaves a thin strip at the very bottom that page elements cannot paint; it's painted solid black so it reads as part of the phone bezel. This is a platform constraint, not a bug in the game.
 
 ## Running locally
 
