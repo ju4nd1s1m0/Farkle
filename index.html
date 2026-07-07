@@ -824,12 +824,12 @@ const PALETTES = {
 };
 
 /* ============ settings (persisted) ============ */
-let curTable = store.get('fk_table') || 'oak';
+let curTable = store.get('fk_table') || 'wood';
 let curDice = store.get('fk_dice') || 'white';
 let curSpeed = store.get('fk_speed') === 'quick' ? 'quick' : 'dramatic';
 let curAI = store.get('fk_ai') || 'balanced';
 let curReb = store.get('fk_reb') !== 'off';
-if (!['oak','wood','felt','black'].includes(curTable)) curTable = 'oak';
+if (!['oak','wood','felt','black'].includes(curTable)) curTable = 'wood';
 if (!PALETTES[curDice]) curDice = 'ivory';
 if (!['cautious','balanced','reckless'].includes(curAI)) curAI = 'balanced';
 document.body.dataset.table = curTable;

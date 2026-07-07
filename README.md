@@ -13,7 +13,7 @@ Add it to your Home Screen on iOS and it launches fullscreen as a standalone app
 - **Full Farkle rules** — singles, triples, multiples, straights, partial straights, three pairs, two triples, four-of-a-kind + pair, hot dice, and an optional Last Chance rebuttal turn.
 - **Custom scoring** — a Classic Rules toggle locks standard scoring; turn it off to change point values or disable the non-standard combos. The in-game Help chart is rendered from the active rules, so it always matches the game you're playing.
 - **Visual Help chart** — scoring reference drawn with mini dice (including "?" wildcards), not a wall of text.
-- **Tables & dice** — light oak (default), dark wood, green felt, and black tables using real photo textures; white casino, ivory, crimson, and obsidian dice. The status bar tint follows the selected table.
+- **Tables & dice** — dark wood (default), light oak, green felt, and black tables using real photo textures; white casino, ivory, crimson, and obsidian dice. The status bar tint follows the selected table.
 - **App-grade behavior** — installable PWA (manifest + icons), offline play via service worker (three.js and textures cached), portrait lock, and automatic game snapshots each turn: if iOS evicts the app mid-game, Resume Game restores it.
 - **Quality of life** — shake to roll, sound effects, dramatic or quick roll speed, per-roll set-aside history, adjustable goal (1,000–10,000), score pop-ups, lifetime stats vs. the AI, and a win celebration worth seeing.
 
