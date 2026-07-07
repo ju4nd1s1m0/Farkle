@@ -1,4 +1,4 @@
-const CACHE = 'farkle-v1';
+const CACHE = 'farkle-v2';
 const CORE = [
   './',
   './index.html',
