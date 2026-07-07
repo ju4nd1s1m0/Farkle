@@ -1614,12 +1614,19 @@ wheel.addEventListener('click', e => {
   }
   requestAnimationFrame(() => { wheel.scrollTop = gi * ITEM_H; wheelSync(); });
 }
+const THEME_TONE = { oak:'#a98753', wood:'#241610', felt:'#0f5c2b', black:'#131316' };
+function applyThemeColor(name){
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', THEME_TONE[name] || '#241610');
+}
+applyThemeColor(curTable);
 $('#tableChips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
   curTable = b.dataset.tb;
   document.body.dataset.table = curTable;
   store.set('fk_table', curTable);
   applyTableTheme(curTable);
+  applyThemeColor(curTable);
   syncMenu();
 });
 $('#diceChips').addEventListener('click', e => {
@@ -2031,43 +2038,6 @@ $('#newBtn').addEventListener('click', () => {
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
   updateResume();
 });
-
-/* ---- TEMPORARY DIAGNOSTIC (band investigation) ---- */
-(function(){
-  const box = document.createElement('div');
-  box.style.cssText = 'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 46px);z-index:99;' +
-    'background:rgba(0,0,0,.75);color:#0f0;font:10px/1.5 monospace;padding:6px 8px;border-radius:6px;' +
-    'pointer-events:none;white-space:pre';
-  document.body.appendChild(box);
-  const line = document.createElement('div');
-  line.style.cssText = 'position:fixed;left:0;right:0;bottom:0;height:14px;z-index:99;' +
-    'background:rgba(0,255,80,.85);pointer-events:none';
-  document.body.appendChild(line);
-  const probeB = document.createElement('div');
-  probeB.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-bottom,0px)';
-  document.body.appendChild(probeB);
-  const probeT = document.createElement('div');
-  probeT.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-top,0px)';
-  document.body.appendChild(probeT);
-  function upd(){
-    const tbg = document.getElementById('tableBG').getBoundingClientRect();
-    const hasSel = (() => { try { return document.querySelector('html:has(body)') !== null; } catch(e){ return false; } })();
-    box.textContent =
-      'BUILD: band-diag-3 (manifest-only)' +
-      '\ninnerH: ' + innerHeight + '  innerW: ' + innerWidth +
-      '\nscreen: ' + screen.width + 'x' + screen.height +
-      '\nvisualVp: ' + (window.visualViewport ? Math.round(visualViewport.height) : 'n/a') +
-      '\nsafe-t: ' + probeT.offsetHeight + 'px  safe-b: ' + probeB.offsetHeight + 'px' +
-      '\ntableBG h: ' + Math.round(tbg.height) + ' (top ' + Math.round(tbg.top) + ')' +
-      '\nstandalone: ' + (navigator.standalone === true ? 'yes(nav)' :
-        (matchMedia('(display-mode: standalone)').matches ? 'yes(mm)' : 'NO')) +
-      '\n:has() support: ' + (hasSel ? 'yes' : 'NO') +
-      '\ndocEl h: ' + Math.round(document.documentElement.getBoundingClientRect().height);
-  }
-  upd();
-  addEventListener('resize', upd);
-  setInterval(upd, 1200);
-})();
 
 /* boot the table scene immediately so the menu sits on it */
 init3D();
