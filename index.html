@@ -1799,8 +1799,26 @@ function startGame(mode, target){
   beginTurn(true);
 }
 
+function saveGame(){
+  if (S.over || !S.players.length) return;
+  try{
+    store.set('fk_save', JSON.stringify({
+      mode: S.mode, target: S.target, cur: S.cur,
+      finalFor: S.finalFor === undefined ? null : S.finalFor,
+      players: S.players.map(p => ({name: p.name, total: p.total, ai: !!p.ai})),
+    }));
+  }catch(e){}
+}
+function clearSave(){ try{ localStorage.removeItem('fk_save'); }catch(e){} }
+function loadSave(){
+  try{
+    const s = JSON.parse(store.get('fk_save'));
+    return (s && s.players && s.players.length === 2) ? s : null;
+  }catch(e){ return null; }
+}
 function beginTurn(first){
   S.turnScore = 0; S.firstRoll = true; S.keeps = [];
+  saveGame();
   S.dice = Array.from({length:6}, (_,i) => ({
     id:i, val:0, zone:'tray', sel:false, wx:0, wz:0, yaw:0
   }));
@@ -1959,7 +1977,21 @@ bankBtn.addEventListener('click', () => { if (!S.busy) playerBank(); });
 $('#rulesBtn').addEventListener('click', () => { renderHowTo(); $('#rulesOv').classList.add('on'); });
 $('#rulesClose').addEventListener('click', () => $('#rulesOv').classList.remove('on'));
 function updateResume(){
-  $('#resumeBtn').style.display = (S.players.length && !S.over) ? '' : 'none';
+  const live = S.players.length && !S.over;
+  $('#resumeBtn').style.display = (live || loadSave()) ? '' : 'none';
+}
+function resumeSaved(sv){
+  startGame(sv.mode, sv.target);
+  for (let i = 0; i < 2; i++){
+    S.players[i].name = sv.players[i].name;
+    S.players[i].total = sv.players[i].total;
+  }
+  S.cur = sv.cur;
+  S.finalFor = sv.finalFor === null ? undefined : sv.finalFor;
+  $('#bn0').textContent = S.players[0].name;
+  $('#bn1').textContent = S.players[1].name;
+  renderScore();
+  beginTurn(true);
 }
 $('#quitBtn').addEventListener('click', () => {
   if (S.busy && !S.players[S.cur].ai) return;
@@ -1967,7 +1999,12 @@ $('#quitBtn').addEventListener('click', () => {
   updateResume();
 });
 $('#resumeBtn').addEventListener('click', () => {
-  $('#menu').classList.remove('on'); $('#game').classList.add('on');
+  if (S.players.length && !S.over){
+    $('#menu').classList.remove('on'); $('#game').classList.add('on');
+    return;
+  }
+  const sv = loadSave();
+  if (sv) resumeSaved(sv);
 });
 $('#rematchBtn').addEventListener('click', () => startGame(S.mode, S.target));
 $('#newBtn').addEventListener('click', () => {
@@ -1979,6 +2016,10 @@ $('#newBtn').addEventListener('click', () => {
 /* boot the table scene immediately so the menu sits on it */
 init3D();
 fitCamera();
+updateResume();
+if ('serviceWorker' in navigator){
+  addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+}
 
 /* turn mechanics */
 function commitSelection(){
@@ -2127,6 +2168,7 @@ function nextPlayer(){
 function endGame(p){
   const gen = S.gen;
   S.over = true; S.busy = false;
+  clearSave();
   renderScore();
   if (S.mode === 'ai'){
     Stats.inc('games');
