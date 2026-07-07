@@ -443,6 +443,7 @@ body[data-table="wood"] .iconbtn,body[data-table="felt"] .iconbtn,body[data-tabl
       </div>
     </div>
 
+    <button class="btn-primary" id="resumeBtn" style="display:none">Resume Game</button>
     <button class="btn-primary" id="startBtn">Start Game</button>
     <div class="menubtns">
       <button class="btn-sec" id="menuSettings">Settings</button>
@@ -1957,15 +1958,22 @@ rollBtn.addEventListener('click', () => { if (!S.busy) playerRoll(); });
 bankBtn.addEventListener('click', () => { if (!S.busy) playerBank(); });
 $('#rulesBtn').addEventListener('click', () => { renderHowTo(); $('#rulesOv').classList.add('on'); });
 $('#rulesClose').addEventListener('click', () => $('#rulesOv').classList.remove('on'));
+function updateResume(){
+  $('#resumeBtn').style.display = (S.players.length && !S.over) ? '' : 'none';
+}
 $('#quitBtn').addEventListener('click', () => {
   if (S.busy && !S.players[S.cur].ai) return;
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
-  S.over = true;
+  updateResume();
+});
+$('#resumeBtn').addEventListener('click', () => {
+  $('#menu').classList.remove('on'); $('#game').classList.add('on');
 });
 $('#rematchBtn').addEventListener('click', () => startGame(S.mode, S.target));
 $('#newBtn').addEventListener('click', () => {
   $('#winOv').classList.remove('on');
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
+  updateResume();
 });
 
 /* boot the table scene immediately so the menu sits on it */
