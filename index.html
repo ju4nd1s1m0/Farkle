@@ -46,7 +46,7 @@ body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(120% 90% at 50% 0%, rgba(201,150,46,.05), transparent 55%);
 }
-#tableBG{position:fixed;inset:0;z-index:0}
+#tableBG{position:fixed;left:0;right:0;top:0;bottom:calc(0px - var(--safe-b));z-index:0}
 #tableBG.off{display:none}
 #tableBG canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
 #tableBG::after{
@@ -60,7 +60,7 @@ body::before{
 /* ---------- MENU ---------- */
 #menu{overflow-y:auto;-webkit-overflow-scrolling:touch;gap:20px;padding-top:calc(var(--safe-t) + 34px)}
 #menu::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  content:'';position:fixed;left:0;right:0;top:0;bottom:calc(0px - var(--safe-b));z-index:0;pointer-events:none;
   background:radial-gradient(130% 100% at 50% 40%, rgba(0,0,0,.08) 30%, rgba(0,0,0,.42));
 }
 #menu > *{position:relative;z-index:1}
@@ -1189,7 +1189,7 @@ function init3D(){
 
 function trayNDC(){
   const r = trayArea.getBoundingClientRect();
-  const W = innerWidth, H = innerHeight;
+  const W = D3.viewW || innerWidth, H = D3.viewH || innerHeight;
   return {
     x1: (r.left / W) * 2 - 1,
     x2: (r.right / W) * 2 - 1,
@@ -1211,8 +1211,11 @@ function groundQuad(n){
 function fitCamera(){
   if (!D3.ready) return;
   const r = trayArea.getBoundingClientRect();
-  D3.renderer.setSize(innerWidth, innerHeight, false);
-  D3.camera.aspect = innerWidth / innerHeight;
+  const cb = document.getElementById('tableBG').getBoundingClientRect();
+  D3.viewW = cb.width || innerWidth;
+  D3.viewH = cb.height || innerHeight;
+  D3.renderer.setSize(D3.viewW, D3.viewH, false);
+  D3.camera.aspect = D3.viewW / D3.viewH;
   if (r.width < 10 || r.height < 10){
     if (D3.everFit){                       // back on the menu mid-game: keep the exact in-game framing
       D3.camera.updateProjectionMatrix();
@@ -1523,8 +1526,9 @@ function sync3D(){
 trayArea.addEventListener('pointerdown', e => {
   if (!D3.ready || S.busy || S.over || S.players[S.cur].ai) return;
   if (S.firstRoll){ playerRoll(); return; }   // empty table: tap anywhere to roll
-  const nx = (e.clientX / innerWidth) * 2 - 1;
-  const ny = -(e.clientY / innerHeight) * 2 + 1;
+  const VW = D3.viewW || innerWidth, VH = D3.viewH || innerHeight;
+  const nx = (e.clientX / VW) * 2 - 1;
+  const ny = -(e.clientY / VH) * 2 + 1;
   D3.ray.setFromCamera({x: nx, y: ny}, D3.camera);
   const meshes = S.dice.filter(d => d.zone === 'tray' && d.val > 0).map(d => D3.dice[d.id]);
   const hits = D3.ray.intersectObjects(meshes, false);
@@ -1534,7 +1538,7 @@ trayArea.addEventListener('pointerdown', e => {
     const v = new THREE.Vector3();
     for (const m of meshes){
       v.copy(m.position).project(D3.camera);
-      const sx = (v.x + 1) / 2 * innerWidth, sy = (1 - v.y) / 2 * innerHeight;
+      const sx = (v.x + 1) / 2 * VW, sy = (1 - v.y) / 2 * VH;
       const dd = Math.hypot(sx - e.clientX, sy - e.clientY);
       if (dd < bestD){ bestD = dd; bestId = m.userData.id; }
     }
