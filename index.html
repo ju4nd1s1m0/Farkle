@@ -708,12 +708,39 @@ const SFX = {
   hot(){ [523, 659, 784].forEach((f, i) => this.tone(f, i * 0.07, 0.12, 'triangle', 0.2)); },
   win(){ [523, 659, 784, 1046, 1318].forEach((f, i) => this.tone(f, i * 0.1, 0.24, 'triangle', 0.2)); },
 };
+/* iOS standalone audio unlock:
+   - resume the WebAudio context on any user gesture (it suspends aggressively in home-screen apps)
+   - play a silent looping <audio> element to switch the audio session to playback mode,
+     so game sound works even with the ring/silent switch on silent */
+function unlockAudio(){
+  if (!SFX.on) return;
+  SFX.ensure();
+  if (SFX.ctx && SFX.ctx.state === 'suspended') SFX.ctx.resume();
+  if (!SFX._el){
+    const a = document.createElement('audio');
+    a.setAttribute('playsinline', '');
+    a.loop = true;
+    a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+    a.volume = 0.01;
+    a.play().catch(() => {});
+    SFX._el = a;
+  } else {
+    SFX._el.play().catch(() => {});
+  }
+}
+document.addEventListener('pointerdown', unlockAudio, true);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  if (SFX.ctx && SFX.ctx.state === 'suspended') SFX.ctx.resume();
+  if (SFX._el && SFX.on) SFX._el.play().catch(() => {});
+});
 function setSound(on){
   SFX.on = on;
   store.set('fk_sound', on ? 'on' : 'off');
   $('#sndChip').textContent = 'Sound: ' + (on ? 'On' : 'Off');
   $('#sndChip').classList.toggle('pick', on);
-  if (on) SFX.ensure();
+  if (on){ SFX.ensure(); unlockAudio(); }
+  else if (SFX._el){ SFX._el.pause(); }
 }
 
 /* ============ scoring (per rules card) ============ */
