@@ -34,9 +34,10 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overscroll-behavior:none}
+html{background:#1a0f05}
 body{
   font-family:var(--font);
-  background:var(--bg);
+  background:#1a0f05;
   color:var(--text);
   position:fixed;inset:0;overflow:hidden;
   font-size:16px;line-height:1.4;
@@ -182,6 +183,12 @@ body[data-table="oak"] .fly{color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,.85),
 body[data-table="oak"] #tableBG{background:#b59468}
 body[data-table="felt"] #tableBG{background:#14883f}
 body[data-table="black"] #tableBG{background:#131316}
+body[data-table="oak"]{background:#b59468}
+body[data-table="felt"]{background:#14883f}
+body[data-table="black"]{background:#131316}
+html:has(body[data-table="oak"]){background:#b59468}
+html:has(body[data-table="felt"]){background:#14883f}
+html:has(body[data-table="black"]){background:#131316}
 body[data-table="black"] .board{
   --sbt:#f2f2f5;--sbm:rgba(242,242,245,.9);--sbf:rgba(242,242,245,.72);
   --sbl:rgba(255,255,255,.2);--sbg:#f2c15c;--sp0:#93d2f2;--sp1:#ff9d8a;
