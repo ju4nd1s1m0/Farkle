@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#1f1f22">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
@@ -34,10 +32,14 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overscroll-behavior:none}
-html{background:#1a0f05}
+html{
+  background:#1a0f05;
+  background-image:linear-gradient(rgba(0,0,0,.3), rgba(0,0,0,.3)), url('table-wood.jpeg');
+  background-size:cover;background-position:center;
+}
 body{
   font-family:var(--font);
-  background:#1a0f05;
+  background:transparent;
   color:var(--text);
   position:fixed;inset:0;overflow:hidden;
   font-size:16px;line-height:1.4;
@@ -183,12 +185,20 @@ body[data-table="oak"] .fly{color:#ffffff;text-shadow:0 1px 3px rgba(0,0,0,.85),
 body[data-table="oak"] #tableBG{background:#b59468}
 body[data-table="felt"] #tableBG{background:#14883f}
 body[data-table="black"] #tableBG{background:#131316}
-body[data-table="oak"]{background:#b59468}
-body[data-table="felt"]{background:#14883f}
-body[data-table="black"]{background:#131316}
-html:has(body[data-table="oak"]){background:#b59468}
-html:has(body[data-table="felt"]){background:#14883f}
-html:has(body[data-table="black"]){background:#131316}
+body[data-table="oak"]{background:transparent}
+body[data-table="felt"]{background:transparent}
+body[data-table="black"]{background:transparent}
+html:has(body[data-table="oak"]){
+  background:#b59468;
+  background-image:linear-gradient(rgba(0,0,0,.22), rgba(0,0,0,.22)), url('table-oak.jpeg');
+  background-size:cover;background-position:center;
+}
+html:has(body[data-table="felt"]){
+  background:#14883f;
+  background-image:linear-gradient(rgba(0,0,0,.28), rgba(0,0,0,.28)), url('table-felt.jpeg');
+  background-size:cover;background-position:center;
+}
+html:has(body[data-table="black"]){background:#131316;background-image:none}
 body[data-table="black"] .board{
   --sbt:#f2f2f5;--sbm:rgba(242,242,245,.9);--sbf:rgba(242,242,245,.72);
   --sbl:rgba(255,255,255,.2);--sbg:#f2c15c;--sp0:#93d2f2;--sp1:#ff9d8a;
