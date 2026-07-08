@@ -323,12 +323,34 @@ body[data-table="wood"] .iconbtn,body[data-table="felt"] .iconbtn,body[data-tabl
   background:rgba(255,255,255,.92);box-shadow:0 2px 10px rgba(0,0,0,.35);
 }
 
-/* tabletop 2-player: everything faces the active player */
-body.p2turn #game{transform:rotate(180deg)}
-body.p2turn #tableBG{transform:rotate(180deg)}
-body.p2turn .overlay{transform:rotate(180deg)}
-body.p2turn #toast{rotate:180deg;top:auto;bottom:calc(var(--safe-b) + 130px)}
-body.p2turn .spop,body.p2turn .fly{rotate:180deg}
+/* rotating 2-player view: everything faces the active player */
+body.p2turn:not(.tabletop) #game{transform:rotate(180deg)}
+body.p2turn:not(.tabletop) #tableBG{transform:rotate(180deg)}
+body.p2turn:not(.tabletop) .overlay{transform:rotate(180deg)}
+body.p2turn:not(.tabletop) #toast{rotate:180deg;top:auto;bottom:calc(var(--safe-b) + 130px)}
+body.p2turn:not(.tabletop) .spop,body.p2turn:not(.tabletop) .fly{rotate:180deg}
+
+/* tabletop 2-player view: neutral shared table, sideways scoreboard,
+   controls dock to the active player's end */
+body.tabletop .gametop{
+  position:absolute;
+  width:min(64dvh, 520px);
+  left:calc(58px - min(64dvh, 520px)/2);
+  top:50%;
+  transform:translateY(-50%) rotate(-90deg);
+  z-index:2;
+}
+body.tabletop .playrow{margin:128px 36px 132px 108px}
+body.tabletop .keptcol{left:auto;right:0;align-items:flex-end}
+body.tabletop .selchip{display:none}
+body.tabletop .bottomrow{
+  position:absolute;left:108px;right:36px;bottom:8px;z-index:3;
+  justify-content:center;gap:14px;align-items:center;
+}
+body.tabletop.p2turn .bottomrow{
+  bottom:auto;top:calc(var(--safe-t) + 8px);
+  transform:rotate(180deg);
+}
 
 /* ---------- OVERLAYS ---------- */
 .overlay{
@@ -561,6 +583,11 @@ body.p2turn .spop,body.p2turn .fly{rotate:180deg}
       <div class="chips left" id="spdChips">
         <button class="chip pick" data-sp="dramatic">Dramatic</button>
         <button class="chip" data-sp="quick">Quick</button>
+      </div>
+      <div class="rhead">TWO PLAYER VIEW</div>
+      <div class="chips left" id="v2pChips">
+        <button class="chip pick" data-vp="rotate">Rotating</button>
+        <button class="chip" data-vp="table">Tabletop</button>
       </div>
       <div class="rhead">GAME</div>
       <div class="chips left">
@@ -836,6 +863,7 @@ let curDice = store.get('fk_dice') || 'white';
 let curSpeed = store.get('fk_speed') === 'quick' ? 'quick' : 'dramatic';
 let curAI = store.get('fk_ai') || 'balanced';
 let curReb = store.get('fk_reb') !== 'off';
+let curV2P = store.get('fk_2pview') === 'table' ? 'table' : 'rotate';
 if (!['oak','wood','felt','black'].includes(curTable)) curTable = 'wood';
 if (!PALETTES[curDice]) curDice = 'ivory';
 if (!['cautious','balanced','reckless'].includes(curAI)) curAI = 'balanced';
@@ -1359,7 +1387,9 @@ function scatterWorld(diceToPlace){
 function startRoll3D(diceList, dur, stag){
   const now = performance.now();
   const b = D3.bounds;
-  const fromFar = !!S.players[S.cur] && S.players[S.cur].ai;   // Hans sits across the table
+  const pcur = S.players[S.cur];
+  const fromFar = !!pcur && (pcur.ai ||
+    (S.mode === '2p' && S.cur === 1 && curV2P === 'table'));   // opponent sits across the table
   D3.roll.list = diceList.map((d, i) => {
     const mesh = D3.dice[d.id];
     mesh.visible = true;
@@ -1608,6 +1638,8 @@ function syncMenu(){
   $('#aiRow').classList.toggle('on', pendingMode === 'ai');
   $('#rebChip').textContent = 'Last Chance: ' + (curReb ? 'On' : 'Off');
   $('#rebChip').classList.toggle('pick', curReb);
+  document.querySelectorAll('#v2pChips .chip').forEach(b =>
+    b.classList.toggle('pick', b.dataset.vp === curV2P));
 }
 $('#modeChips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
@@ -1673,6 +1705,13 @@ $('#aiChips').addEventListener('click', e => {
   curAI = b.dataset.ai;
   store.set('fk_ai', curAI);
   syncMenu();
+});
+$('#v2pChips').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  curV2P = b.dataset.vp === 'table' ? 'table' : 'rotate';
+  store.set('fk_2pview', curV2P);
+  syncMenu();
+  if ($('#game').classList.contains('on') && !S.over) refreshOrientation();
 });
 $('#rebChip').addEventListener('click', () => {
   curReb = !curReb;
@@ -1867,12 +1906,19 @@ function loadSave(){
     return (s && s.players && s.players.length === 2) ? s : null;
   }catch(e){ return null; }
 }
+function refreshOrientation(){
+  const tab = S.mode === '2p' && curV2P === 'table';
+  const p2 = S.mode === '2p' && S.cur === 1 && !S.over;
+  document.body.classList.toggle('tabletop', tab);
+  document.body.classList.toggle('p2turn', p2);
+  const flip = p2 && !tab;
+  if (D3.flip !== flip) D3.flip = flip;
+  fitCamera();
+}
 function beginTurn(first){
   S.turnScore = 0; S.firstRoll = true; S.keeps = [];
   saveGame();
-  const flip = S.mode === '2p' && S.cur === 1;
-  document.body.classList.toggle('p2turn', flip);
-  if (D3.flip !== flip){ D3.flip = flip; fitCamera(); }
+  refreshOrientation();
   S.dice = Array.from({length:6}, (_,i) => ({
     id:i, val:0, zone:'tray', sel:false, wx:0, wz:0, yaw:0
   }));
@@ -2050,12 +2096,13 @@ function resumeSaved(sv){
 $('#quitBtn').addEventListener('click', () => {
   if (S.busy && !S.players[S.cur].ai) return;
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
-  document.body.classList.remove('p2turn');
+  document.body.classList.remove('p2turn', 'tabletop');
   updateResume();
 });
 $('#resumeBtn').addEventListener('click', () => {
   if (S.players.length && !S.over){
     $('#menu').classList.remove('on'); $('#game').classList.add('on');
+    refreshOrientation();
     return;
   }
   const sv = loadSave();
@@ -2065,7 +2112,7 @@ $('#rematchBtn').addEventListener('click', () => startGame(S.mode, S.target));
 $('#newBtn').addEventListener('click', () => {
   $('#winOv').classList.remove('on');
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
-  document.body.classList.remove('p2turn');
+  document.body.classList.remove('p2turn', 'tabletop');
   updateResume();
 });
 
