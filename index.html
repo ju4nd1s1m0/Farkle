@@ -325,6 +325,7 @@ body[data-table="wood"] .iconbtn,body[data-table="felt"] .iconbtn,body[data-tabl
 
 /* tabletop 2-player: everything faces the active player */
 body.p2turn #game{transform:rotate(180deg)}
+body.p2turn #tableBG{transform:rotate(180deg)}
 body.p2turn .overlay{transform:rotate(180deg)}
 body.p2turn #toast{rotate:180deg;top:auto;bottom:calc(var(--safe-b) + 130px)}
 body.p2turn .spop,body.p2turn .fly{rotate:180deg}
@@ -1218,12 +1219,14 @@ function init3D(){
 function trayNDC(){
   const r = trayArea.getBoundingClientRect();
   const W = D3.viewW || innerWidth, H = D3.viewH || innerHeight;
-  return {
+  const n = {
     x1: (r.left / W) * 2 - 1,
     x2: (r.right / W) * 2 - 1,
     y1: 1 - (r.bottom / H) * 2,
     y2: 1 - (r.top / H) * 2,
   };
+  if (D3.flip) return { x1: -n.x2, x2: -n.x1, y1: -n.y2, y2: -n.y1 };
+  return n;
 }
 function groundQuad(n){
   const pts = [];
@@ -1257,9 +1260,8 @@ function fitCamera(){
   }
   const el = 64 * Math.PI / 180;
   let dist = 9;
-  const dir = D3.flip ? -1 : 1;
   for (let pass = 0; pass < 3; pass++){
-    D3.camera.position.set(0, dist * Math.sin(el), dir * dist * Math.cos(el));
+    D3.camera.position.set(0, dist * Math.sin(el), dist * Math.cos(el));
     D3.camera.lookAt(0, 0, 0);
     D3.camera.updateProjectionMatrix();
     D3.camera.updateMatrixWorld();
@@ -1556,8 +1558,10 @@ trayArea.addEventListener('pointerdown', e => {
   if (!D3.ready || S.busy || S.over || S.players[S.cur].ai) return;
   if (S.firstRoll){ playerRoll(); return; }   // empty table: tap anywhere to roll
   const VW = D3.viewW || innerWidth, VH = D3.viewH || innerHeight;
-  const nx = (e.clientX / VW) * 2 - 1;
-  const ny = -(e.clientY / VH) * 2 + 1;
+  const px = D3.flip ? VW - e.clientX : e.clientX;
+  const py = D3.flip ? VH - e.clientY : e.clientY;
+  const nx = (px / VW) * 2 - 1;
+  const ny = -(py / VH) * 2 + 1;
   D3.ray.setFromCamera({x: nx, y: ny}, D3.camera);
   const meshes = S.dice.filter(d => d.zone === 'tray' && d.val > 0).map(d => D3.dice[d.id]);
   const hits = D3.ray.intersectObjects(meshes, false);
@@ -1568,7 +1572,7 @@ trayArea.addEventListener('pointerdown', e => {
     for (const m of meshes){
       v.copy(m.position).project(D3.camera);
       const sx = (v.x + 1) / 2 * VW, sy = (1 - v.y) / 2 * VH;
-      const dd = Math.hypot(sx - e.clientX, sy - e.clientY);
+      const dd = Math.hypot(sx - px, sy - py);
       if (dd < bestD){ bestD = dd; bestId = m.userData.id; }
     }
     id = bestId;
