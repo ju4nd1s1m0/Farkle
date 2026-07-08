@@ -1154,7 +1154,11 @@ const PALETTES = {
 /* ============ settings (persisted) ============ */
 let curTable = store.get('fk_table') || 'wood';
 let curDice = store.get('fk_dice') || 'white';
-let curSpeed = store.get('fk_speed') === 'quick' ? 'quick' : 'dramatic';
+let curSpeed = (() => {
+  const v = store.get('fk_speed');
+  if (v === 'quick') return 'fast';        // legacy value
+  return ['slow', 'normal', 'fast'].includes(v) ? v : 'normal';
+})();
 let curAI = store.get('fk_ai') || 'balanced';
 let curReb = store.get('fk_reb') !== 'off';
 let curV2P = (() => {
@@ -1166,8 +1170,9 @@ if (!PALETTES[curDice]) curDice = 'ivory';
 if (!['cautious','balanced','reckless'].includes(curAI)) curAI = 'balanced';
 document.body.dataset.table = curTable;
 document.body.dataset.dice = curDice;
-const speedParams = () => curSpeed === 'quick'
-  ? { dur: 430, stag: 40, pace: 0.45 }
+const speedParams = () =>
+  curSpeed === 'fast' ? { dur: 430, stag: 40, pace: 0.45 }
+  : curSpeed === 'slow' ? { dur: 1550, stag: 115, pace: 1.3 }
   : { dur: 1150, stag: 90, pace: 1 };
 
 /* ============ stats ============ */
