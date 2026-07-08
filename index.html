@@ -328,6 +328,10 @@ body[data-dice="obsidian"]{--kd0:#44444d;--kd1:#28282f;--kd2:#151519;--kdp0:#e2b
   font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted);margin:7px 0 -3px;
 }
+.hprob{
+  font-style:italic;font-weight:500;font-size:10px;color:var(--faint);
+  text-transform:none;letter-spacing:0;margin-left:7px;
+}
 .hhead{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--faint);margin:5px 0 -3px}
 .hownote{font-size:12px;color:var(--muted);line-height:1.55;margin-top:2px}
 .hownote b{color:var(--text);font-weight:600}
@@ -2303,6 +2307,53 @@ $('#startBtn').addEventListener('click', () => {
   store.set('fk_mode', pendingMode); store.set('fk_target', String(pendingTarget));
   startGame(pendingMode, pendingTarget);
 });
+const PROBS = (() => {
+  const out = {};
+  const c = [0,0,0,0,0,0,0];
+  for (let n = 1; n <= 6; n++){
+    const tot = Math.pow(6, n);
+    const s = { singles:0, trip:0, twoTrip:0, multi:0, partial:0, straight:0, pairs3:0, fourPair:0 };
+    const rec = i => {
+      if (i === n){
+        if (c[1] || c[5]) s.singles++;
+        let t = 0, m = false, p = 0, fp = false;
+        for (let x = 1; x <= 6; x++){
+          if (c[x] >= 3) t++;
+          if (c[x] >= 4){
+            m = true;
+            for (let y = 1; y <= 6; y++) if (y !== x && c[y] >= 2) fp = true;
+          }
+          if (c[x] >= 2) p++;
+        }
+        if (t >= 1) s.trip++;
+        if (t === 2) s.twoTrip++;
+        if (m) s.multi++;
+        if ((c[1] && c[2] && c[3] && c[4] && c[5]) || (c[2] && c[3] && c[4] && c[5] && c[6])) s.partial++;
+        if (c[1] && c[2] && c[3] && c[4] && c[5] && c[6]) s.straight++;
+        if (p >= 3) s.pairs3++;
+        if (fp) s.fourPair++;
+        return;
+      }
+      for (let v = 1; v <= 6; v++){ c[v]++; rec(i + 1); c[v]--; }
+    };
+    rec(0);
+    const f = {};
+    for (const k in s){
+      const pct = 100 * s[k] / tot;
+      f[k] = pct === 0 ? '\u2014'
+        : pct >= 10 ? pct.toFixed(0) + '%'
+        : pct >= 1 ? pct.toFixed(1) + '%'
+        : pct.toFixed(2) + '%';
+    }
+    out[n] = f;
+  }
+  return out;
+})();
+function nextRollCount(){
+  if (!S.players.length || S.over || !$('#game').classList.contains('on')) return 6;
+  const left = S.dice.filter(d => d.zone === 'tray' && !d.sel).length;
+  return left === 0 ? 6 : left;
+}
 const RULE_OPTS = {
   fives:[0,50], trip1:[300,1000], straight:[0,1200,1500,2000,3000],
   pairs:[0,500,750,1000,1500], fourpair:[0,500,750,1000,1500], mult:['off','flat','x234','x468'],
@@ -2343,21 +2394,26 @@ function ruleChartHTML(edit){
     '<div class="hpts"><span class="hline"><span>' + state + '</span><span class="hsuf"></span></span></div></div>';
 
   const L = [];
-  if (!edit) L.push('<div class="hhead">SCORING</div>');
-  L.push('<div class="hsub">Singles \u2014 each die</div>');
+  const N = edit ? 6 : nextRollCount();
+  const P = PROBS[N];
+  const pr = k => '<i class="hprob">' + P[k] + '</i>';
+  if (!edit) L.push('<div class="hhead">SCORING<i class="hprob">' +
+    (N === 6 ? 'odds on a full 6-die roll' : 'odds on your next roll \u2014 ' + N + (N === 1 ? ' die' : ' dice')) +
+    '</i></div>');
+  L.push('<div class="hsub">Singles \u2014 each die' + pr('singles') + '</div>');
   L.push(row(dice([1]), '100'));
   L.push(row(dice([5]), cell('fives', numTxt(EF.fives))));
-  L.push('<div class="hsub">Three of a kind</div>');
+  L.push('<div class="hsub">Three of a kind' + pr('trip') + '</div>');
   L.push(row(dice([1,1,1]), cell('trip1', fmt(EF.trip1))));
   L.push(row(dice([2,2,2]), '200'));
   L.push(row(dice([3,3,3]), '300'));
   L.push(row(dice([4,4,4]), '400'));
   L.push(row(dice([5,5,5]), '500'));
   L.push(row(dice([6,6,6]), '600'));
-  L.push('<div class="hsub">Two triplets</div>');
+  L.push('<div class="hsub">Two triplets' + pr('twoTrip') + '</div>');
   L.push(row(grp(qs(3), qs(3)), cell('tripx2', numTxt(EF.tripx2))));
   if (edit || EF.mult !== 'off' || EF.six1s > 0){
-    L.push('<div class="hsub">Four \u00b7 five \u00b7 six of a kind</div>');
+    L.push('<div class="hsub">Four \u00b7 five \u00b7 six of a kind' + pr('multi') + '</div>');
     let m = ['Off', 'Off', 'Off'];
     if (EF.mult === 'flat') m = ['1,000', '2,000', '3,000'];
     else if (EF.mult !== 'off'){
@@ -2374,17 +2430,17 @@ function ruleChartHTML(edit){
     if (edit || EF.six1s > 0)
       L.push(row(dice([1,1,1,1,1,1]), cell('six1s', numTxt(EF.six1s))));
   }
-  L.push('<div class="hsub">Partial straight</div>');
+  L.push('<div class="hsub">Partial straight' + pr('partial') + '</div>');
   L.push(row(
     '<div class="hstack"><div class="hdrow">' + dice([1,2,3,4,5]) + '</div>' +
     '<span class="hor">or</span>' +
     '<div class="hdrow">' + dice([2,3,4,5,6]) + '</div></div>',
     cell('partial', numTxt(EF.partial))));
-  L.push('<div class="hsub">Straight</div>');
+  L.push('<div class="hsub">Straight' + pr('straight') + '</div>');
   L.push(row(dice([1,2,3,4,5,6]), cell('straight', numTxt(EF.straight))));
-  L.push('<div class="hsub">Three pairs</div>');
+  L.push('<div class="hsub">Three pairs' + pr('pairs3') + '</div>');
   L.push(row(grp(qs(2), qs(2), qs(2)), cell('pairs', numTxt(EF.pairs))));
-  L.push('<div class="hsub">4 of a kind + a pair</div>');
+  L.push('<div class="hsub">4 of a kind + a pair' + pr('fourPair') + '</div>');
   L.push(row(grp(qs(4), qs(2)), cell('fourpair', numTxt(EF.fourpair))));
 
   L.push('<div class="hhead">VARIATIONS' +

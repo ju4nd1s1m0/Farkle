@@ -39,6 +39,8 @@ HTML file, installable as an iPhone home-screen app.
 
 ### Quality of life
 - Beginner-friendly How to Play: three steps, a visual scoring chart, active house rules
+- **Live odds** — every scoring group in the Help chart shows its exact probability,
+  recomputed for the dice remaining in your hand mid-turn (press-your-luck math, built in)
 - Game saves automatically every turn — resume from the menu after closing the app
 - Win/loss/streak/best-turn stats for games against Hans
 - Installable PWA with offline support (service-worker cached)
@@ -69,3 +71,5 @@ new version (network-first for the page, cache-first for CDN assets and textures
   rings, and the win-celebration rain
 - Scoring uses an exhaustive combo decomposition (`bp`) so the engine always finds the
   best interpretation of a selection under the active ruleset
+- Combo probabilities are exact: all outcomes for 1–6 dice (~56k) are enumerated once
+  at load, not sampled or approximated
