@@ -386,13 +386,6 @@ body[data-dice="obsidian"]{--kd0:#44444d;--kd1:#28282f;--kd2:#151519;--kdp0:#e2b
   text-align:center;padding:0 30px;line-height:1.5;z-index:2;text-shadow:0 1px 3px rgba(0,0,0,.8), 0 0 12px rgba(0,0,0,.45);
 }
 .hintSub{display:block;font-size:13px;font-weight:500;color:rgba(240,233,220,.65);margin-top:4px}
-.trayflash{
-  position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;border-radius:18px;
-  background:radial-gradient(120% 120% at 50% 50%, transparent 40%, rgba(192,74,62,.4));
-  transition:opacity .2s;
-}
-.trayflash.on{opacity:1}
-.trayflash.win{background:radial-gradient(120% 120% at 50% 50%, rgba(212,165,69,.15) 0%, rgba(212,165,69,.35) 100%)}
 
 /* combo callout */
 .combo{
@@ -785,7 +778,6 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
       <div class="keptcol" id="keptRow"></div>
       <div class="tray" id="trayArea">
       <div class="trayHint" id="trayHint">Roll the dice to begin</div>
-      <div class="trayflash" id="trayFlash"></div>
         <div class="combo" id="comboPop"></div>
       </div>
     </div>
@@ -2538,7 +2530,6 @@ function startGame(mode, target, roster){
   $('#menu').classList.remove('on');
   $('#game').classList.add('on');
   $('#winOv').classList.remove('on');
-  $('#trayFlash').classList.remove('win');
   for (let i = 0; i < S.players.length; i++)
     $('#bn' + i).textContent = S.players[i].name;
   $('#bgoal').textContent = fmt(target);
@@ -2890,15 +2881,10 @@ async function rollTray(){
     await sleep(300);
     if (S.over || gen !== S.gen) return null;
     D3.shakeUntil = performance.now() + 450;
-    if (!liteView()){
-      $('#trayFlash').classList.remove('win');
-      $('#trayFlash').classList.add('on');
-    }
     needLoop();
     SFX.farkle();
     if (S.mode === 'ai' && S.cur === 0) Stats.inc('farkles');
     await showBanner('FARKLE!', 'fkb', 1400);
-    $('#trayFlash').classList.remove('on');
     return 'farkle';
   }
   return 'ok';
@@ -3030,13 +3016,11 @@ function endGame(p){
     Stats.save();
   }
   SFX.win();
-  $('#trayFlash').classList.add('win', 'on');
   celebrate();
   $('#winName').textContent = p.name + (p.name === 'You' ? ' win!' : ' wins!');
   $('#winScore').textContent = S.players.map(p => p.name + ' ' + fmt(p.total)).join('  \u00b7  ');
   setTimeout(() => {
     if (!S.over || S.gen !== gen) return;
-    $('#trayFlash').classList.remove('on');
     $('#winOv').classList.add('on');
   }, reduced ? 100 : 1500);
 }
