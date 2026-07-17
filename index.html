@@ -906,7 +906,7 @@ function netWatch(){
     if (NET.alive && snap.val() === 'done' && !S.over) toast('Game ended by opponent');
   }));
 }
-const CHAT = { list: [], timer: 0 };
+const CHAT = { list: [], timer: 0, kb: false };
 const escHTML = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function chatShow(msg){
   const f = $('#chatFloat');
@@ -1603,6 +1603,7 @@ function groundQuad(n){
   return pts;
 }
 function fitCamera(){
+  if (CHAT.kb) return;   // keyboard is up: keep the table framed as-is
   if (!D3.ready) return;
   const r = trayArea.getBoundingClientRect();
   const tb = document.getElementById('tableBG');
@@ -2663,6 +2664,12 @@ $('#netShare').addEventListener('click', async () => {
   }
 }
 
+$('#chatIn').addEventListener('focus', () => { CHAT.kb = true; });
+$('#chatIn').addEventListener('blur', () => {
+  CHAT.kb = false;
+  window.scrollTo(0, 0);
+  setTimeout(fitCamera, 60);
+});
 $('#chatSend').addEventListener('click', chatSendMsg);
 $('#chatIn').addEventListener('keydown', e => {
   if (e.key === 'Enter'){ e.preventDefault(); chatSendMsg(); }
