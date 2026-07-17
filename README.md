@@ -19,12 +19,10 @@ HTML file, installable as an iPhone home-screen app.
 - **Hans (AI)** — a computer opponent with three personalities: Cautious, Balanced, Reckless
 - **Multiplayer, 2–4 players** — pass-and-play with per-player names and a scoreboard
   that adapts its layout to the roster
-- **Two-player views** (illustrated picker in Settings):
-  - **Pass** — classic portrait, hand the phone over between turns
-  - **Head to Head** — phone flat between opposite-facing players; each gets mirrored
-    controls, their own mini scoreboard, kept-dice pile, and oriented announcements
-  - **Side by Side** — full landscape for two players on the same side of the table,
-    with per-player corner controls and angled throws from each player's hand
+- **Pass-and-play multiplayer** — a floating hand-off card announces whose turn it is;
+  tap anywhere to take the phone and roll
+- **Online play (two phones, real time)** — create a game, share the 4-letter code,
+  and a friend joins from anywhere; rolls, selections, and banks sync live
 
 ### Rules
 - **Standard scoring** follows the official Farkle table: singles 100/50, triples at
@@ -56,6 +54,20 @@ table-*.jpeg          table surface photo textures
 ```
 
 No build step, no dependencies to install. three.js loads from a CDN via import map.
+
+## Enabling online play
+
+Online mode syncs through Firebase Realtime Database (free tier is plenty):
+
+1. Create a project at https://console.firebase.google.com (any name, Analytics off is fine)
+2. Build → Realtime Database → Create database → **test mode** (or lock it down later with
+   rules allowing read/write only under `/rooms`)
+3. Project settings → Your apps → Web app → copy the config object
+4. In `index.html`, find `const FIREBASE_CONFIG = null;` and replace `null` with your config
+5. Push — the Online option on the mode wheel lights up
+
+Until a config is present, Online mode shows a setup note and everything else works normally.
+The host's goal, Last Chance setting, and scoring rules apply to both players.
 
 ## Deploying
 
