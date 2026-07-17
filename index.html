@@ -947,7 +947,7 @@ function netTeardown(final){
   $('#chatFloat').innerHTML = '';
 }
 async function netApply(a){
-  if (S.over) return;
+  if (S.over && a.t !== 'again') return;
   if (a.t === 'sel'){
     const d = S.dice[a.id];
     if (d && d.zone === 'tray'){ d.sel = !!a.on; sync3D(); renderScore(); renderControls(); }
@@ -961,6 +961,11 @@ async function netApply(a){
   if (a.t === 'bank'){
     if (a.sel) applyRemoteSel(a.sel);
     playerBank(true);
+    return;
+  }
+  if (a.t === 'again'){
+    toast('Rematch!');
+    netRematch();
     return;
   }
 }
@@ -2840,6 +2845,7 @@ function resumeSaved(sv){
   beginTurn(true);
 }
 $('#quitBtn').addEventListener('click', () => {
+  if (NET.on) netTeardown(true);
   if (S.busy && !S.players[S.cur].ai) return;
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
   updateResume();
@@ -2853,8 +2859,20 @@ $('#resumeBtn').addEventListener('click', () => {
   const sv = loadSave();
   if (sv) resumeSaved(sv);
 });
-$('#rematchBtn').addEventListener('click', () => startGame(S.mode, S.target));
+function netRematch(){
+  startGame('net', S.target, S.players.map(p => p.name));
+}
+$('#rematchBtn').addEventListener('click', () => {
+  if (NET.on){
+    if (!NET.alive){ toast('Opponent left \u2014 start a new game'); return; }
+    netSend({ t: 'again' });
+    netRematch();
+  } else {
+    startGame(S.mode, S.target);
+  }
+});
 $('#newBtn').addEventListener('click', () => {
+  if (NET.on) netTeardown(true);
   $('#winOv').classList.remove('on');
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
   updateResume();
@@ -3066,7 +3084,6 @@ function nextPlayer(){
 }
 
 function endGame(p){
-  if (NET.on) setTimeout(() => netTeardown(true), 400);
   const gen = S.gen;
   S.over = true; S.busy = false;
   clearSave();
