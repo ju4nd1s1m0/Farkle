@@ -1729,7 +1729,8 @@ function startRoll3D(diceList, dur, stag){
   const now = performance.now();
   const b = D3.bounds;
   const pcur = S.players[S.cur];
-  const fromFar = !!pcur && pcur.ai;   // Hans sits across the table
+  const fromFar = !!pcur && (pcur.ai ||
+    (NET.on && S.cur !== NET.my));   // Hans or your online opponent sits across the table
   D3.roll.list = diceList.map((d, i) => {
     const mesh = D3.dice[d.id];
     mesh.visible = true;
