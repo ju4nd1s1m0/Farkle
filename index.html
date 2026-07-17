@@ -68,16 +68,23 @@ body::before{
 .qmini{width:26px;height:26px;border-radius:50%;font-size:14px;flex:none;margin-left:2px}
 .iconbtn.vinfo{width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;padding:0;min-width:0}
 .vinfo svg{width:14px;height:14px;display:block}
-#settingsOv .vinfo{background:#ececf0;box-shadow:none}
-.viewdgm{display:flex;justify-content:center;gap:6px}
-.vcol{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
-.vdg{width:100%;max-width:104px}
-.vdg rect{fill:#f4f4f6;stroke:#8a8a90;stroke-width:2.5}
-.vdg .p{fill:#b9b9c0}
-.vdg .dot{fill:#8a8a90}
-.vdg .ar{fill:none;stroke:#b9b9c0;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.vcap{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--muted);text-transform:uppercase}
 #resumeBtn{align-self:center;padding:9px 24px;font-size:14px}
+#netRow{display:none}
+#netRow.on{display:flex}
+#netSetup{display:flex;flex-direction:column;gap:9px;align-items:center}
+#netName{width:min(230px,64vw)}
+.netbtns{display:flex;gap:8px;align-items:center}
+.netor{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.08em}
+#netCode{width:76px;text-align:center;text-transform:uppercase;letter-spacing:.18em;font-weight:700}
+.netcode{
+  font-size:34px;font-weight:800;letter-spacing:.3em;color:#fff;text-align:center;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);padding-left:.3em;
+}
+.netstat{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#netLobby{display:flex;flex-direction:column;gap:8px;align-items:center}
+.netnote{font-size:12px;color:rgba(255,255,255,.75);text-align:center;max-width:250px;
+  text-shadow:0 1px 3px rgba(0,0,0,.6)}
 #menu::before{
   content:'';position:fixed;left:0;right:0;top:0;bottom:calc(0px - var(--safe-b));z-index:0;pointer-events:none;
   background:radial-gradient(130% 100% at 50% 40%, rgba(0,0,0,.08) 30%, rgba(0,0,0,.42));
@@ -114,7 +121,6 @@ body::before{
 .opplist input:focus{border-color:var(--gold-dim)}
 #pcChips{gap:6px;justify-content:center}
 #pcChips .chip{min-width:40px;padding:8px 0;width:40px}
-.chip.navail,.seg button.navail{opacity:.35;pointer-events:none}
 .chips.left{justify-content:flex-start}
 .btn-primary{
   font-family:var(--font);font-size:18px;font-weight:700;color:#1d1d1f;
@@ -164,7 +170,6 @@ body[data-table="oak"] .btn-primary{background:var(--accent);color:#fff;box-shad
 #v2pMenu .chip{width:110px;padding:8px 0;font-size:13px;min-width:0;text-align:center}
 .strips{gap:14px;margin-top:6px;margin-bottom:4px}
 .striprow{display:flex;align-items:center;justify-content:center;gap:12px;position:relative;width:100%}
-.subrow{display:flex;align-items:center;justify-content:center;gap:6px}
 .striplab{
   font-size:11px;font-weight:700;letter-spacing:.12em;width:104px;text-align:right;
   color:rgba(255,255,255,.78);text-shadow:0 1px 3px rgba(0,0,0,.7), 0 0 8px rgba(0,0,0,.35);
@@ -433,13 +438,7 @@ body[data-table="wood"] .iconbtn,body[data-table="felt"] .iconbtn,body[data-tabl
   background:rgba(255,255,255,.92);box-shadow:0 2px 10px rgba(0,0,0,.35);
 }
 
-/* head-to-head 2-player view: static portrait, players at opposite ends,
-   mirrored personal controls and condensed score panels */
-.h2hui{display:none}
-body.h2h .h2hui{display:block}
-body.h2h .gametop{display:none}
-body.h2h .selchip{display:none}
-body.h2h .trayHint{display:none}
+/* in-table announcement banners (turn changes retired; farkle / hot dice) */
 .tban{
   position:absolute;left:50%;bottom:118px;translate:-50% 0;z-index:4;pointer-events:none;
   font-size:18px;font-weight:800;color:#f4c65e;white-space:nowrap;
@@ -447,15 +446,8 @@ body.h2h .trayHint{display:none}
   opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;
 }
 .tban.on{opacity:1;transform:translateY(0)}
-.tban.far{bottom:auto;top:118px;rotate:180deg;transform:translateY(-6px)}
-.tban.far.on{transform:translateY(0)}
 .tban.fkb{color:#ff6659;font-size:24px;letter-spacing:.04em}
 .tban.hotb{color:#ffb340;font-size:20px}
-.tban.tabctr{
-  left:50%;top:50%;bottom:auto;
-  translate:-50% -50%;transform:none;
-}
-.tban.tabctr.on{transform:none}
 .tban.ctr{left:50%;top:42%;bottom:auto;translate:-50% -50%;transform:translateY(8px)}
 .tban.ctr.on{transform:translateY(0)}
 .tipbox{
@@ -465,115 +457,6 @@ body.h2h .trayHint{display:none}
   transition:opacity .18s,transform .18s;pointer-events:none;
 }
 .tipbox.on{opacity:1;transform:translateY(0)}
-.tipbox.viewtip{padding:10px 6px 6px;max-width:none;overflow:hidden}
-.viewtip .viewdgm{position:relative;display:block;height:98px}
-.viewtip .vcol{position:absolute;top:0}
-.viewpick{display:flex;gap:8px;width:100%}
-.vopt{
-  flex:1;border:2px solid #e4e4e9;border-radius:12px;padding:6px 3px 4px;
-  background:#fafafa;cursor:pointer;display:flex;flex-direction:column;
-  align-items:center;gap:1px;transition:border-color .15s,box-shadow .15s;
-}
-.vopt.pick{border-color:var(--accent);background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.14)}
-.vopt .vdg{max-width:78px}
-.vopt .vcap{font-size:9px}
-.vopt.navail{opacity:.35;pointer-events:none}
-body.h2h .ctl{display:none}
-body.h2h .bottomrow{
-  position:absolute;left:10px;top:50%;right:auto;bottom:auto;
-  transform:translateY(-50%);z-index:3;
-}
-body.h2h .keptcol{left:-64px;right:auto;top:calc(50% + 82px);bottom:-40px;align-items:flex-start}
-body.h2h.p2turn .keptcol{top:-40px;bottom:calc(50% + 82px);transform:rotate(180deg);align-items:flex-end}
-body.h2h .playrow{margin:148px 74px 148px 74px}
-.hpair{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:10px;z-index:3}
-.hpair.far{right:auto;bottom:auto;left:12px;top:12px;transform:rotate(180deg)}
-.cbtn2{
-  width:120px;height:44px;border-radius:999px;border:none;cursor:pointer;padding:0 10px;
-  font-family:var(--font);font-size:15px;font-weight:700;line-height:1;white-space:nowrap;
-  display:flex;align-items:center;justify-content:center;
-  background:#fff;color:#1d1d1f;box-shadow:0 4px 14px rgba(0,0,0,.4);
-  transition:opacity .2s,transform .1s;
-}
-.cbtn2:active{transform:scale(.94)}
-.cbtn2[disabled]{opacity:.28;pointer-events:none;filter:saturate(.4)}
-.cbtn2.hbank{
-  background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.5);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-}
-.board.mini{
-  position:absolute;left:10px;bottom:10px;z-index:3;pointer-events:none;
-  flex:none;width:300px;padding:6px 0 7px;
-}
-.board.mini.far{left:auto;bottom:auto;right:10px;top:10px;transform:rotate(180deg)}
-.board.mini .bcol{padding:0 9px;text-align:center}
-.board.mini .btot{font-size:20px;line-height:24px}
-.board.mini .bnm{font-size:11px;line-height:16px}
-.board.mini .bnum{font-size:13px;line-height:17px}
-.board.mini .blb{font-size:10.5px;line-height:17px}
-.btot.c0{color:var(--sp0)}
-.btot.c1{color:var(--sp1)}
-.spop.h2p2{rotate:180deg}
-body.h2h.p2turn .combo{
-  top:auto;bottom:12px;
-  translate:-50% 0;rotate:180deg;
-  transform:translateY(-6px) scale(.85);
-}
-body.h2h.p2turn .combo.on{transform:translateY(0) scale(1)}
-
-/* tabletop 2-player view: the whole game renders in landscape;
-   players sit at the two long edges of the phone */
-body.tabletop #game,
-body.tabletop #tableBG{
-  top:0;left:0;right:auto;bottom:auto;
-  width:100dvh;height:100vw;
-  transform:rotate(90deg) translateY(-100vw);
-  transform-origin:top left;
-}
-body.tabletop #game{padding:10px}
-body.tabletop .overlay:not(#settingsOv){
-  top:0;left:0;right:auto;bottom:auto;
-  width:100dvh;height:100vw;
-  transform:rotate(90deg) translateY(-100vw);
-  transform-origin:top left;
-}
-body.tabletop .gametop{width:100%;max-width:560px;align-self:center}
-body.tabletop .playrow{margin:20px 150px 72px 150px}
-body.tabletop .selchip{display:none}
-body.tabletop .keptcol{left:-142px}
-body.tabletop.p2turn .keptcol{left:auto;right:-142px;align-items:flex-end}
-/* utilities: centered at the bottom between the two player pairs */
-body.tabletop .bottomrow{
-  position:absolute;left:50%;bottom:12px;right:auto;top:auto;z-index:3;
-  transform:translateX(-50%);
-}
-body.tabletop .sidebtns{flex-direction:row}
-body.tabletop .ctl{display:none}
-/* per-player circular roll/bank */
-.tabctl{display:none}
-body.tabletop .tabctl{display:block}
-.tpair{position:absolute;left:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;z-index:3}
-.tpair.far{left:auto;right:14px;bottom:14px}
-.cbtn{
-  width:126px;height:46px;border-radius:999px;border:none;cursor:pointer;padding:0 10px;
-  font-family:var(--font);font-size:15px;font-weight:700;line-height:1;white-space:nowrap;
-  display:flex;align-items:center;justify-content:center;
-  background:#fff;color:#1d1d1f;box-shadow:0 4px 14px rgba(0,0,0,.4);
-  transition:opacity .2s,transform .1s;
-}
-.cbtn:active{transform:scale(.94)}
-.cbtn[disabled]{opacity:.28;pointer-events:none;filter:saturate(.4)}
-.cbtn.bank{
-  background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.5);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-}
-body.tabletop #toast{
-  left:50%;right:auto;top:50%;bottom:auto;
-  translate:-50% -50%;rotate:90deg;transform:none;
-  font-size:19px;
-}
-body.tabletop #toast.on{transform:none}
-body.tabletop .spop,body.tabletop .fly{rotate:90deg}
 
 /* ---------- OVERLAYS ---------- */
 .overlay{
@@ -583,8 +466,8 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
 }
 .overlay.on{display:flex;animation:fadein .25s ease both}
 .overlay.light{background:rgba(245,242,236,.55);backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px)}
-#rulesOv,#scoreOv,#settingsOv{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
-#rulesOv .ovpanel,#scoreOv .ovpanel,#settingsOv .ovpanel{box-shadow:0 12px 44px rgba(0,0,0,.45)}
+#rulesOv,#scoreOv,#settingsOv,#handOv{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+#rulesOv .ovpanel,#scoreOv .ovpanel,#settingsOv .ovpanel,#handOv .ovpanel{box-shadow:0 12px 44px rgba(0,0,0,.45)}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 .stamp{
   font-size:clamp(40px,13vw,58px);font-weight:800;letter-spacing:.01em;line-height:1;
@@ -670,6 +553,7 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
             <div class="witem">2 Players</div>
             <div class="witem">3 Players</div>
             <div class="witem">4 Players</div>
+            <div class="witem">Online</div>
             <div class="wpad"></div>
           </div>
           <div class="wsel"></div>
@@ -704,6 +588,26 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
         </div>
         <div class="aidesc" id="aiDesc"></div>
       </div>
+      <div class="opplist" id="netRow">
+        <div class="sublabel">PLAY OVER THE INTERNET</div>
+        <div id="netSetup">
+          <input id="netName" maxlength="10" placeholder="Your name">
+          <div class="netbtns">
+            <button class="chip" id="netCreate">Create game</button>
+            <span class="netor">or</span>
+            <input id="netCode" maxlength="4" placeholder="CODE" autocapitalize="characters">
+            <button class="chip" id="netJoin">Join</button>
+          </div>
+        </div>
+        <div id="netLobby" style="display:none">
+          <div class="netcode" id="netCodeShow"></div>
+          <div class="netstat" id="netStat">Waiting for a player to join&#8230;</div>
+          <button class="chip" id="netCancel">Cancel</button>
+        </div>
+        <div class="netnote" id="netNote" style="display:none">
+          Online play needs a Firebase config — see the README.
+        </div>
+      </div>
       <div class="opplist" id="nameRow">
         <div class="sublabel">NAMES</div>
         <div class="namesgrid">
@@ -711,14 +615,6 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
           <input id="n2" maxlength="10" placeholder="Player 2" value="Player 2">
           <input id="n3" maxlength="10" placeholder="Player 3" value="Player 3" style="display:none">
           <input id="n4" maxlength="10" placeholder="Player 4" value="Player 4" style="display:none">
-        </div>
-        <div id="viewRow" style="display:none">
-          <div class="sublabel subrow">VIEW<button class="iconbtn vinfo" id="viewInfoM"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7.8" r="1.6" fill="currentColor"/><rect x="10.85" y="10.6" width="2.3" height="7" rx="1.15" fill="currentColor"/></svg></button></div>
-          <div class="chips" id="v2pMenu">
-            <button class="chip" data-vp="handoff">Pass</button>
-            <button class="chip" data-vp="h2h">Head to Head</button>
-            <button class="chip" data-vp="table">Side by Side</button>
-          </div>
         </div>
       </div>
     </div>
@@ -782,24 +678,6 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
       </div>
     </div>
 
-    <div class="h2hui">
-      <div class="board mini" id="mini0">
-        <div class="bcol" data-mc="0"><div class="bnm"></div><div class="btot c0 mtv">0</div><div class="bnum mrv">0</div><div class="bnum">0</div></div>
-        <div class="bcol mid"><div class="bnm">Goal</div><div class="btot goal mgv">0</div><div class="blb">Round</div><div class="blb">Selected</div></div>
-        <div class="bcol" data-mc="1"><div class="bnm"></div><div class="btot c1">0</div><div class="bnum">0</div><div class="bnum">0</div></div>
-      </div>
-      <div class="board mini far" id="mini1">
-        <div class="bcol" data-mc="0"><div class="bnm"></div><div class="btot c0">0</div><div class="bnum">0</div><div class="bnum">0</div></div>
-        <div class="bcol mid"><div class="bnm">Goal</div><div class="btot goal mgv">0</div><div class="blb">Round</div><div class="blb">Selected</div></div>
-        <div class="bcol" data-mc="1"><div class="bnm"></div><div class="btot c1 mtv">0</div><div class="bnum mrv">0</div><div class="bnum">0</div></div>
-      </div>
-      <div class="hpair"><button class="cbtn2" id="hroll0">Roll</button><button class="cbtn2 hbank" id="hbank0">Bank</button></div>
-      <div class="hpair far"><button class="cbtn2" id="hroll1">Roll</button><button class="cbtn2 hbank" id="hbank1">Bank</button></div>
-    </div>
-    <div class="tabctl">
-      <div class="tpair"><button class="cbtn" id="roll0">Roll</button><button class="cbtn bank" id="bank0">Bank</button></div>
-      <div class="tpair far"><button class="cbtn" id="roll1">Roll</button><button class="cbtn bank" id="bank1">Bank</button></div>
-    </div>
     <div class="bottomrow">
       <div class="sidebtns">
         <button class="iconbtn" id="rulesBtn" aria-label="Scoring rules">?</button>
@@ -817,8 +695,7 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
   <div class="overlay" id="handOv">
     <div class="ovpanel">
       <h2 id="handName"></h2>
-      <div class="fin">The table turns — it’s your turn.</div>
-      <div class="ovbtns"><button class="btn-primary" id="handBtn" style="font-size:17px;padding:13px 30px">Start Turn</button></div>
+      <div class="fin">Pass the phone — tap anywhere to roll.</div>
     </div>
   </div>
 
@@ -852,12 +729,6 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
       <div class="rhead">GAMEPLAY</div>
       <div class="srow"><div class="slab">Roll speed</div>
         <div class="seg" id="spdChips"><button data-sp="slow">Slow</button><button data-sp="normal">Normal</button><button data-sp="fast">Fast</button></div></div>
-      <div class="crow"><div class="clab"><span class="cname">Two player view<small>how two players share the phone</small></span></div>
-        <div class="viewpick" id="v2pChips">
-          <div class="vopt" data-vp="handoff"></div>
-          <div class="vopt" data-vp="h2h"></div>
-          <div class="vopt" data-vp="table"></div>
-        </div></div>
       <div class="srow"><div class="slab">Last Chance<small>others get one final turn</small></div><button class="chip mini-chip2" id="rebChip">On</button></div>
       <div class="rhead">SOUND &amp; MOTION</div>
       <div class="srow"><div class="slab">Sound</div><button class="chip mini-chip2" id="sndChip">On</button></div>
@@ -876,15 +747,6 @@ body.tabletop .spop,body.tabletop .fly{rotate:90deg}
       <button class="btn-sec" id="scReset">Reset values</button>
       <button class="btn-sec" id="scoreClose">Done</button>
     </div>
-  </div>
-
-  <div id="viewTpl" style="display:none">
-      <div class="viewdgm">
-
-        <div class="vcol"><svg viewBox="0 0 120 88" class="vdg"><rect x="47" y="16" width="26" height="46" rx="5"/><circle cx="60" cy="57" r="1.6" class="dot"/><circle cx="28" cy="76" r="8" class="p"/><circle cx="92" cy="76" r="8" class="p"/><path d="M37 70 Q60 50 83 70" class="ar"/><path d="M44 71 L37 70 L40 63" class="ar"/><path d="M76 71 L83 70 L80 63" class="ar"/></svg><div class="vcap">Pass</div></div>
-        <div class="vcol"><svg viewBox="0 0 120 88" class="vdg"><rect x="47" y="21" width="26" height="46" rx="5"/><circle cx="60" cy="62" r="1.6" class="dot"/><circle cx="60" cy="10" r="8" class="p"/><circle cx="60" cy="78" r="8" class="p"/></svg><div class="vcap">Head to Head</div></div>
-        <div class="vcol"><svg viewBox="0 0 120 88" class="vdg"><rect x="37" y="22" width="46" height="26" rx="5"/><circle cx="42" cy="45" r="1.6" class="dot"/><circle cx="46" cy="70" r="8" class="p"/><circle cx="74" cy="70" r="8" class="p"/></svg><div class="vcap">Side by Side</div></div>
-      </div>
   </div>
 
   <div class="overlay" id="rulesOv">
@@ -934,6 +796,79 @@ const store = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
   set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
 };
+
+/* ============ online play (Firebase Realtime Database) ============
+   Paste your Firebase web-app config here to enable Online mode.   */
+const FIREBASE_CONFIG = {
+  databaseURL: 'https://farkle-9ca6f-default-rtdb.firebaseio.com',
+};
+
+const NET = { on:false, my:0, code:'', fb:null, room:null, seq:0, unsub:[], alive:false };
+async function netLib(){
+  if (NET.fb) return NET.fb;
+  const [appM, dbM] = await Promise.all([
+    import('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js'),
+  ]);
+  const app = appM.initializeApp(FIREBASE_CONFIG);
+  NET.fb = { db: dbM.getDatabase(app), m: dbM };
+  return NET.fb;
+}
+const roomRef = p => NET.fb.m.ref(NET.fb.db, 'rooms/' + NET.code + (p ? '/' + p : ''));
+function netSend(action){
+  if (!NET.on || !NET.alive) return;
+  NET.seq++;
+  NET.fb.m.set(roomRef('action'), Object.assign({ seq: NET.seq, from: NET.my }, action));
+}
+function netWatch(){
+  const { m } = NET.fb;
+  NET.unsub.push(m.onValue(roomRef('action'), snap => {
+    const a = snap.val();
+    if (!a || a.from === NET.my || a.seq <= NET.seq) return;
+    NET.seq = a.seq;
+    netApply(a);
+  }));
+  const oppIdx = 1 - NET.my;
+  NET.unsub.push(m.onValue(roomRef('players/' + oppIdx + '/online'), snap => {
+    if (NET.alive && snap.val() === false){
+      toast(S.players[oppIdx] ? S.players[oppIdx].name + ' left the game' : 'Opponent left');
+    }
+  }));
+  NET.unsub.push(m.onValue(roomRef('status'), snap => {
+    if (NET.alive && snap.val() === 'done' && !S.over) toast('Game ended by opponent');
+  }));
+}
+function netTeardown(final){
+  if (!NET.on) return;
+  for (const u of NET.unsub){ try { u(); } catch(e){} }
+  NET.unsub = [];
+  if (final && NET.fb){
+    try { NET.fb.m.set(roomRef('status'), 'done'); } catch(e){}
+  }
+  NET.on = false; NET.alive = false; NET.code = '';
+}
+async function netApply(a){
+  if (S.over) return;
+  if (a.t === 'sel'){
+    const d = S.dice[a.id];
+    if (d && d.zone === 'tray'){ d.sel = !!a.on; sync3D(); renderScore(); renderControls(); }
+    return;
+  }
+  if (a.t === 'roll' || a.t === 'keeproll'){
+    if (a.t === 'keeproll' && a.sel) applyRemoteSel(a.sel);
+    await remoteRoll(a.vals || []);
+    return;
+  }
+  if (a.t === 'bank'){
+    if (a.sel) applyRemoteSel(a.sel);
+    playerBank(true);
+    return;
+  }
+}
+function applyRemoteSel(ids){
+  for (const d of S.dice) if (d.zone === 'tray') d.sel = ids.includes(d.id);
+  sync3D(); renderScore();
+}
 const dieH = v => '<div class="rdie">' + pipHTML(v) + '</div>';
 const qH = '<div class="rdie q">?</div>';
 const grpH = (...parts) => parts.join('<div class="hsp"></div>');
@@ -1153,10 +1088,6 @@ let curSpeed = (() => {
 })();
 let curAI = store.get('fk_ai') || 'balanced';
 let curReb = store.get('fk_reb') !== 'off';
-let curV2P = (() => {
-  const v = store.get('fk_2pview');
-  return (v === 'table' || v === 'h2h') ? v : 'handoff';
-})();
 if (!['oak','wood','felt','black'].includes(curTable)) curTable = 'wood';
 if (!PALETTES[curDice]) curDice = 'ivory';
 if (!['cautious','balanced','reckless'].includes(curAI)) curAI = 'balanced';
@@ -1559,17 +1490,6 @@ function trayNDC(){
     y1: 1 - (r.bottom / H) * 2,
     y2: 1 - (r.top / H) * 2,
   };
-  if (document.body.classList.contains('tabletop')){
-    // device -> landscape-local: x' = deviceY, y' = deviceWidth - deviceX
-    const lx1 = r.top, lx2 = r.bottom;
-    const ly1 = innerWidth - r.right, ly2 = innerWidth - r.left;
-    return {
-      x1: (lx1 / W) * 2 - 1,
-      x2: (lx2 / W) * 2 - 1,
-      y1: 1 - (ly2 / H) * 2,
-      y2: 1 - (ly1 / H) * 2,
-    };
-  }
   return n;
 }
 function groundQuad(n){
@@ -1704,18 +1624,13 @@ function startRoll3D(diceList, dur, stag){
   const now = performance.now();
   const b = D3.bounds;
   const pcur = S.players[S.cur];
-  const duo = S.mode === '2p' && S.players.length === 2;
-  const tab = duo && curV2P === 'table';
-  const fromFar = !!pcur && (pcur.ai ||
-    (duo && S.cur === 1 && curV2P === 'h2h'));   // opponent across the table
+  const fromFar = !!pcur && pcur.ai;   // Hans sits across the table
   D3.roll.list = diceList.map((d, i) => {
     const mesh = D3.dice[d.id];
     mesh.visible = true;
     const P = new THREE.Vector3(d.wx, REST_Y, d.wz);
     const S0 = new THREE.Vector3(
-      tab
-        ? (S.cur === 0 ? b.minX - 0.7 : b.maxX + 0.7) + d.wx * 0.25 + rnd(-0.3, 0.3)
-        : d.wx * 0.55 + rnd(-0.35, 0.35),
+      d.wx * 0.55 + rnd(-0.35, 0.35),
       REST_Y + rnd(2.4, 3.2),
       fromFar
         ? (D3.throwZFar !== undefined ? D3.throwZFar : b.minZ - 1.2) - rnd(0, 0.6)
@@ -1910,10 +1825,6 @@ trayArea.addEventListener('pointerdown', e => {
   const VW = D3.viewW || innerWidth, VH = D3.viewH || innerHeight;
   let px = e.clientX;
   let py = e.clientY;
-  if (document.body.classList.contains('tabletop')){
-    px = e.clientY;
-    py = innerWidth - e.clientX;
-  }
   const nx = (px / VW) * 2 - 1;
   const ny = -(py / VH) * 2 + 1;
   D3.ray.setFromCamera({x: nx, y: ny}, D3.camera);
@@ -1934,8 +1845,10 @@ trayArea.addEventListener('pointerdown', e => {
   if (id < 0) return;
   const d = S.dice.find(x => x.id === id);
   if (!d || d.zone !== 'tray') return;
+  if (NET.on && S.cur !== NET.my) return;
   d.sel = !d.sel;
   SFX.select(d.sel);
+  netSend({ t: 'sel', id: d.id, on: d.sel });
   sync3D(); renderScore(); renderControls();
   checkCombos();
 });
@@ -1948,15 +1861,6 @@ trayArea.addEventListener('pointerdown', e => {
 let pendingMode = store.get('fk_mode') || 'ai';
 let pendingTarget = parseInt(store.get('fk_target') || '5000', 10);
 let pendingCount = Math.min(4, Math.max(2, parseInt(store.get('fk_pcount') || '2', 10)));
-function effCount(){
-  return ($('#game').classList.contains('on') && !S.over && S.mode === '2p' && S.players.length)
-    ? S.players.length : (pendingMode === '2p' ? pendingCount : 2);
-}
-function updateV2PAvail(){
-  const multi = effCount() > 2;
-  document.querySelectorAll('#v2pChips [data-vp], #v2pMenu .chip').forEach(b =>
-    b.classList.toggle('navail', multi && b.dataset.vp !== 'handoff'));
-}
 function updateNameInputs(){
   for (let i = 1; i <= 4; i++)
     $('#n' + i).style.display = i <= pendingCount ? '' : 'none';
@@ -1977,14 +1881,17 @@ function syncMenu(){
   }[curAI] || '';
   $('#nameRow').classList.toggle('on', pendingMode === '2p');
   $('#aiRow').classList.toggle('on', pendingMode === 'ai');
+  $('#netRow').classList.toggle('on', pendingMode === 'net');
+  $('#startBtn').style.display = pendingMode === 'net' ? 'none' : '';
+  if (pendingMode === 'net'){
+    $('#netNote').style.display = FIREBASE_CONFIG ? 'none' : '';
+    $('#netSetup').style.display = FIREBASE_CONFIG ? '' : 'none';
+  }
   $('#rebChip').textContent = curReb ? 'On' : 'Off';
   $('#rebChip').classList.toggle('pick', curReb);
   $('#rebChipM').textContent = curReb ? 'On' : 'Off';
   $('#rebChipM').classList.toggle('pick', curReb);
-  document.querySelectorAll('#v2pChips [data-vp], #v2pMenu .chip').forEach(b =>
-    b.classList.toggle('pick', b.dataset.vp === curV2P));
   syncScoringUI();
-  $('#viewRow').style.display = pendingCount === 2 ? '' : 'none';
 }
 updateNameInputs();
 const GOALS = [1000, 2000, 3000, 4000, 5000, 7500, 10000];
@@ -2021,19 +1928,18 @@ const goalWheel = setupWheel($('#goalWheel'), idx => { pendingTarget = GOALS[idx
   goalWheel.set(gi);
 }
 const modeWheel = setupWheel($('#modeWheel'), idx => {
-  const m = idx === 0 ? 'ai' : '2p';
-  const cnt = idx === 0 ? pendingCount : idx + 1;
+  const m = idx === 0 ? 'ai' : idx === 4 ? 'net' : '2p';
+  const cnt = m === '2p' ? idx + 1 : pendingCount;
   if (m !== pendingMode || cnt !== pendingCount){
     pendingMode = m;
     pendingCount = cnt;
     store.set('fk_mode', pendingMode);
     store.set('fk_pcount', String(pendingCount));
     updateNameInputs();
-    updateV2PAvail();
     syncMenu();
   }
 });
-modeWheel.set(pendingMode === 'ai' ? 0 : pendingCount - 1);
+modeWheel.set(pendingMode === 'ai' ? 0 : pendingMode === 'net' ? 4 : pendingCount - 1);
 const THEME_TONE = { oak:'#a98753', wood:'#241610', felt:'#0f5c2b', black:'#131316' };
 function applyThemeColor(name){
   const m = document.querySelector('meta[name="theme-color"]');
@@ -2079,62 +1985,6 @@ $('#aiChips').addEventListener('click', e => {
   curAI = b.dataset.ai;
   store.set('fk_ai', curAI);
   syncMenu();
-});
-function setV2P(v){
-  curV2P = (v === 'table' || v === 'h2h') ? v : 'handoff';
-  store.set('fk_2pview', curV2P);
-  syncMenu();
-  if ($('#game').classList.contains('on') && !S.over) refreshOrientation();
-}
-$('#v2pChips').addEventListener('click', e => {
-  const b = e.target.closest('[data-vp]'); if (!b) return;
-  setV2P(b.dataset.vp);
-});
-{
-  const cols = document.querySelectorAll('#viewTpl .vcol');
-  document.querySelectorAll('#v2pChips .vopt').forEach((o, i) => {
-    o.innerHTML = cols[i].innerHTML;
-  });
-}
-function hideViewTip(e){
-  const t = document.getElementById('viewTip');
-  if (t){ t.remove(); tipDismiss = { at: Date.now(), tgt: e ? e.target : null, id: 'viewTip' }; }
-}
-function showViewTip(anchor){
-  if (tipJustClosedOn(anchor, 'viewTip')) return;
-  hideViewTip();
-  const btns = [...document.querySelectorAll('#v2pMenu [data-vp]')];
-  const el = document.createElement('div');
-  el.className = 'tipbox viewtip';
-  el.id = 'viewTip';
-  el.innerHTML = document.getElementById('viewTpl').innerHTML;
-  document.body.appendChild(el);
-  const first = btns[0].getBoundingClientRect();
-  const last = btns[btns.length - 1].getBoundingClientRect();
-  const left = Math.max(6, first.left - 8);
-  const width = Math.min(innerWidth - left - 6, last.right + 8 - left);
-  el.style.left = left + 'px';
-  el.style.width = width + 'px';
-  const cw = 100;
-  el.querySelectorAll('.vcol').forEach((c, i) => {
-    const b = btns[i].getBoundingClientRect();
-    let x = b.left + b.width / 2 - left - cw / 2 - 6;   // -6: panel padding
-    x = Math.max(0, Math.min(width - cw - 12, x));
-    c.style.left = x + 'px';
-    c.style.width = cw + 'px';
-  });
-  const h = el.offsetHeight;
-  const above = first.top - h - 10;
-  el.style.top = (above > 8 ? above : last.bottom + 10) + 'px';
-  requestAnimationFrame(() => el.classList.add('on'));
-  setTimeout(() => document.addEventListener('pointerdown', hideViewTip, { once: true }), 0);
-}
-$('#v2pMenu').addEventListener('click', e => {
-  const b = e.target.closest('.chip'); if (b) setV2P(b.dataset.vp);
-});
-$('#viewInfoM').addEventListener('click', e => {
-  e.stopPropagation();
-  showViewTip(e.currentTarget);
 });
 
 function setReb(on){
@@ -2297,7 +2147,7 @@ $('#scoreOv').addEventListener('pointerdown', e => {
   if (e.target === $('#scoreOv')) $('#scoreOv').classList.remove('on');
 });
 syncScoringUI();
-$('#gearBtn').addEventListener('click', () => { updateV2PAvail(); $('#settingsOv').classList.add('on'); });
+$('#gearBtn').addEventListener('click', () => $('#settingsOv').classList.add('on'));
 $('#startBtn').addEventListener('click', () => {
   unlockAudio();
   SFX.ensure();
@@ -2463,7 +2313,7 @@ function renderHowTo(){
   grid.innerHTML = L.join('') + ruleChartHTML(false);
 }
 $('#menuRules').addEventListener('click', () => { renderHowTo(); $('#rulesOv').classList.add('on'); });
-$('#menuSettings').addEventListener('click', () => { updateV2PAvail(); $('#settingsOv').classList.add('on'); });
+$('#menuSettings').addEventListener('click', () => $('#settingsOv').classList.add('on'));
 $('#settingsClose').addEventListener('click', () => $('#settingsOv').classList.remove('on'));
 for (const id of ['settingsOv', 'rulesOv', 'statsOv']){
   const ov = $('#' + id);
@@ -2526,6 +2376,7 @@ function startGame(mode, target, roster){
     }
     S.players = names.map(n => ({name: n, total: 0, ai: false}));
   }
+  if (mode !== 'net' && NET.on) netTeardown(true);
   buildBoard();
   $('#menu').classList.remove('on');
   $('#game').classList.add('on');
@@ -2533,7 +2384,6 @@ function startGame(mode, target, roster){
   for (let i = 0; i < S.players.length; i++)
     $('#bn' + i).textContent = S.players[i].name;
   $('#bgoal').textContent = fmt(target);
-  updateV2PAvail();
   init3D();
   hideParty();
   fitCamera();
@@ -2541,6 +2391,7 @@ function startGame(mode, target, roster){
 }
 
 function saveGame(){
+  if (S.mode === 'net') return;
   if (S.over || !S.players.length) return;
   try{
     store.set('fk_save', JSON.stringify({
@@ -2558,10 +2409,6 @@ function loadSave(){
   }catch(e){ return null; }
 }
 function refreshOrientation(){
-  const duo = S.mode === '2p' && S.players.length === 2;
-  document.body.classList.toggle('tabletop', duo && curV2P === 'table');
-  document.body.classList.toggle('h2h', duo && curV2P === 'h2h');
-  document.body.classList.toggle('p2turn', duo && S.cur === 1 && !S.over);
   fitCamera();
 }
 function beginTurn(first){
@@ -2581,39 +2428,104 @@ function beginTurn(first){
   } else if (finalTurn){
     trayHint.innerHTML = 'Final turn — beat ' + fmt(S.players[S.finalFor].total) + '!'
       + '<span class="hintSub">Tap the table to roll</span>';
+  } else if (NET.on && S.cur !== NET.my){
+    trayHint.innerHTML = S.players[S.cur].name + '\u2019s turn\u2026';
   } else {
     trayHint.innerHTML = 'Tap the table to roll';
   }
   if (S.players[S.cur].ai){ aiTurn(); }
   else if (S.mode === '2p' && !first){
-    if (curV2P === 'handoff' || S.players.length > 2) showHandoff();
-    else if (curV2P === 'h2h') h2hTurnBanners();
-    else toast(S.players[S.cur].name + '\u2019s turn');
+    showHandoff();
+  }
+  else if (S.mode === 'net' && !first){
+    toast(S.cur === NET.my ? 'Your turn' : S.players[S.cur].name + '\u2019s turn');
   }
 }
 
-function h2hTurnBanners(){
-  const act = S.players[S.cur].name;
-  for (const i of [0, 1]){
-    const el = document.createElement('div');
-    el.className = 'tban' + (i === 1 ? ' far' : '');
-    el.textContent = i === S.cur ? 'Your turn' : act + '\u2019s turn';
-    $('#game').appendChild(el);
-    requestAnimationFrame(() => el.classList.add('on'));
-    setTimeout(() => {
-      el.classList.remove('on');
-      setTimeout(() => el.remove(), 300);
-    }, 1700);
-  }
-}
 function showHandoff(){
   S.busy = true;
   $('#handName').textContent = S.players[S.cur].name;
   $('#handOv').classList.add('on');
 }
-$('#handBtn').addEventListener('click', () => {
+/* ---- online lobby ---- */
+$('#netName').value = store.get('fk_netname') || '';
+function myNetName(){
+  const n = ($('#netName').value.trim() || 'Player').slice(0, 10);
+  store.set('fk_netname', n);
+  return n;
+}
+function lobbyUI(inLobby, code, stat){
+  $('#netSetup').style.display = inLobby ? 'none' : '';
+  $('#netLobby').style.display = inLobby ? '' : 'none';
+  if (code !== undefined) $('#netCodeShow').textContent = code;
+  if (stat !== undefined) $('#netStat').textContent = stat;
+}
+async function netCreate(){
+  if (!FIREBASE_CONFIG) return;
+  const name = myNetName();
+  await netLib();
+  NET.code = Array.from({length: 4}, () =>
+    'ABCDEFGHJKMNPQRSTUVWXYZ'[Math.floor(Math.random() * 23)]).join('');
+  NET.my = 0; NET.seq = 0;
+  const { m } = NET.fb;
+  await m.set(roomRef(), {
+    status: 'lobby', created: Date.now(),
+    target: pendingTarget, reb: curReb, rules: RULES,
+    players: { 0: { name, online: true } },
+  });
+  m.onDisconnect(roomRef('players/0/online')).set(false);
+  lobbyUI(true, NET.code, 'Share this code \u2014 waiting for a player\u2026');
+  const un = m.onValue(roomRef('players/1/name'), snap => {
+    const opp = snap.val();
+    if (!opp) return;
+    un();
+    m.set(roomRef('status'), 'live');
+    netBegin([name, opp]);
+  });
+  NET.unsub.push(un);
+}
+async function netJoin(){
+  if (!FIREBASE_CONFIG) return;
+  const code = $('#netCode').value.trim().toUpperCase();
+  if (code.length !== 4){ toast('Enter the 4-letter code'); return; }
+  const name = myNetName();
+  await netLib();
+  NET.code = code; NET.my = 1; NET.seq = 0;
+  const { m } = NET.fb;
+  const snap = await m.get(roomRef());
+  const room = snap.val();
+  if (!room || room.status !== 'lobby'){
+    toast(room ? 'That game already started' : 'No game with that code');
+    NET.code = '';
+    return;
+  }
+  pendingTarget = room.target || pendingTarget;
+  curReb = !!room.reb;
+  if (room.rules) RULES = Object.assign({}, RULES_DEF, room.rules);
+  computeEF();
+  await m.set(roomRef('players/1'), { name, online: true });
+  m.onDisconnect(roomRef('players/1/online')).set(false);
+  lobbyUI(true, code, 'Joining\u2026');
+  netBegin([room.players[0].name, name]);
+}
+function netBegin(roster){
+  NET.on = true; NET.alive = true;
+  netWatch();
+  lobbyUI(false);
+  startGame('net', pendingTarget, roster);
+}
+$('#netCreate').addEventListener('click', () => { unlockAudio(); netCreate().catch(() => toast('Could not create game')); });
+$('#netJoin').addEventListener('click', () => { unlockAudio(); netJoin().catch(() => toast('Could not join')); });
+$('#netCancel').addEventListener('click', () => {
+  netTeardown(true);
+  lobbyUI(false);
+});
+
+$('#handOv').addEventListener('pointerdown', () => {
+  if (!$('#handOv').classList.contains('on')) return;
   $('#handOv').classList.remove('on');
   S.busy = false;
+  if (!S.over && S.firstRoll) playerRoll();
 });
 
 /* rendering (DOM side) */
@@ -2662,20 +2574,6 @@ function renderScore(){
     }
     $('#bc' + i).classList.toggle('turn', i === S.cur && !S.over);
   }
-  if (document.body.classList.contains('h2h') && S.players.length){
-    for (const m of [$('#mini0'), $('#mini1')]){
-      m.querySelectorAll('[data-mc]').forEach(col => {
-        const pi = +col.dataset.mc;
-        const c = col.children;   // bnm, btot, round, selected
-        c[0].textContent = S.players[pi].name;
-        c[1].textContent = fmt(S.players[pi].total);
-        c[2].textContent = fmt(pi === S.cur && !S.over ? S.turnScore : 0);
-        c[3].textContent = fmt(pi === S.cur && !S.over ? sc : 0);
-        col.classList.toggle('turn', pi === S.cur && !S.over);
-      });
-      m.querySelector('.mgv').textContent = fmt(S.target);
-    }
-  }
 }
 function renderControls(){
   const p = S.players[S.cur];
@@ -2701,21 +2599,12 @@ function renderControls(){
     rollBtn.textContent = remaining === 0 ? 'Roll All Six' : 'Keep & Roll';
   }
   if (p && (p.ai || S.busy)){ rollBtn.disabled = true; bankBtn.disabled = true; }
+  if (NET.on && S.cur !== NET.my){ rollBtn.disabled = true; bankBtn.disabled = true; }
   if (p && !p.ai && p.total === 0 && EF.opening > 0 && !S.firstRoll &&
       S.turnScore + Math.max(0, sc) < EF.opening){
     bankBtn.disabled = true;
   }
   bankBtn.textContent = 'Bank';
-  for (const i of [0, 1]){
-    const rb = $('#roll' + i);
-    rb.disabled = rollBtn.disabled || S.cur !== i;
-    rb.textContent = S.cur === i ? rollBtn.textContent : 'Roll';
-    $('#bank' + i).disabled = bankBtn.disabled || S.cur !== i;
-    const hr = $('#hroll' + i);
-    hr.disabled = rollBtn.disabled || S.cur !== i;
-    hr.textContent = S.cur === i ? rollBtn.textContent : 'Roll';
-    $('#hbank' + i).disabled = bankBtn.disabled || S.cur !== i;
-  }
 }
 function renderAll(){ renderKept(); sync3D(); renderScore(); renderControls(); }
 
@@ -2766,20 +2655,12 @@ function flyScore(text, fromRect, toEl){
   setTimeout(() => el.remove(), 750);
 }
 
-const roundEl = () => document.body.classList.contains('h2h')
-  ? $('#mini' + S.cur + ' .mrv') : $('#br' + S.cur);
-const totalEl = () => document.body.classList.contains('h2h')
-  ? $('#mini' + S.cur + ' .mtv') : $('#bt' + S.cur);
+const roundEl = () => $('#br' + S.cur);
+const totalEl = () => $('#bt' + S.cur);
 
 /* buttons */
 rollBtn.addEventListener('click', () => { if (!S.busy) playerRoll(); });
 bankBtn.addEventListener('click', () => { if (!S.busy) playerBank(); });
-for (const i of [0, 1]){
-  $('#roll' + i).addEventListener('click', () => { if (!S.busy && S.cur === i) playerRoll(); });
-  $('#bank' + i).addEventListener('click', () => { if (!S.busy && S.cur === i) playerBank(); });
-  $('#hroll' + i).addEventListener('click', () => { if (!S.busy && S.cur === i) playerRoll(); });
-  $('#hbank' + i).addEventListener('click', () => { if (!S.busy && S.cur === i) playerBank(); });
-}
 $('#rulesBtn').addEventListener('click', () => { renderHowTo(); $('#rulesOv').classList.add('on'); });
 $('#rulesClose').addEventListener('click', () => $('#rulesOv').classList.remove('on'));
 function updateResume(){
@@ -2800,7 +2681,6 @@ function resumeSaved(sv){
 $('#quitBtn').addEventListener('click', () => {
   if (S.busy && !S.players[S.cur].ai) return;
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
-  document.body.classList.remove('p2turn', 'tabletop');
   updateResume();
 });
 $('#resumeBtn').addEventListener('click', () => {
@@ -2816,7 +2696,6 @@ $('#rematchBtn').addEventListener('click', () => startGame(S.mode, S.target));
 $('#newBtn').addEventListener('click', () => {
   $('#winOv').classList.remove('on');
   $('#game').classList.remove('on'); $('#menu').classList.add('on');
-  document.body.classList.remove('p2turn', 'tabletop');
   updateResume();
 });
 
@@ -2859,7 +2738,14 @@ async function rollTray(){
   trayHint.style.display = 'none';
   announced = new Set();
 
-  for (const d of tray) d.val = rint();
+  for (const d of tray) d.val = d._netVal !== undefined ? d._netVal : rint();
+  for (const d of tray) delete d._netVal;
+  if (NET.on && S.cur === NET.my && !S._netRemote){
+    netSend(S._netKept && S._netKept.length
+      ? { t: 'keeproll', sel: S._netKept, vals: tray.map(d => ({ id: d.id, v: d.val })) }
+      : { t: 'roll', vals: tray.map(d => ({ id: d.id, v: d.val })) });
+  }
+  S._netKept = null;
   scatterWorld(tray);
   renderKept(); renderScore(); renderControls();
   if (!S.players[S.cur].ai) S.humanRolls = (S.humanRolls || 0) + 1;
@@ -2890,10 +2776,6 @@ async function rollTray(){
   return 'ok';
 }
 
-function liteView(){
-  return document.body.classList.contains('h2h') ||
-         document.body.classList.contains('tabletop');
-}
 async function showBanner(text, cls, ms){
   const mk = extra => {
     const el = document.createElement('div');
@@ -2906,16 +2788,16 @@ async function showBanner(text, cls, ms){
       setTimeout(() => el.remove(), 300);
     }, ms - 300);
   };
-  if (document.body.classList.contains('h2h')){ mk(''); mk(' far'); }
-  else if (document.body.classList.contains('tabletop')) mk(' tabctr');
-  else mk(' ctr');
+  mk(' ctr');
   await sleep(ms);
 }
 async function playerRoll(){
   const gen = S.gen;
   if (S.over) return;
+  if (NET.on && S.cur !== NET.my) return;
   if (!S.firstRoll && selScore() <= 0) return;
   S.busy = true;
+  S._netKept = S.dice.filter(d => d.zone === 'tray' && d.sel).map(d => d.id);
   commitSelection();
   sync3D();
   renderKept(); renderScore(); renderControls();
@@ -2926,17 +2808,40 @@ async function playerRoll(){
   renderControls();
 }
 
-function playerBank(){
+function playerBank(netFromRemote){
   if (S.over || S.firstRoll) return;
+  if (NET.on && !netFromRemote && S.cur !== NET.my) return;
   const p = S.players[S.cur];
   if (p.total === 0 && EF.opening > 0 &&
       S.turnScore + Math.max(0, selScore()) < EF.opening){
-    toast('Open with ' + fmt(EF.opening) + '+ to bank');
+    if (!netFromRemote) toast('Open with ' + fmt(EF.opening) + '+ to bank');
     return;
   }
+  const selIds = S.dice.filter(d => d.zone === 'tray' && d.sel).map(d => d.id);
   const sc = commitSelection();
   if (sc <= 0) return;
+  if (NET.on && !netFromRemote) netSend({ t: 'bank', sel: selIds });
   bank();
+}
+async function remoteRoll(vals){
+  const gen = S.gen;
+  if (S.over) return;
+  S.busy = true;
+  S._netRemote = true;
+  for (const v of vals){
+    const d = S.dice[v.id];
+    if (d) d._netVal = v.v;
+  }
+  commitSelection();
+  sync3D();
+  renderKept(); renderScore(); renderControls();
+  const res = await rollTray();
+  S._netRemote = false;
+  if (S.over || gen !== S.gen) return;
+  if (res === 'farkle'){ loseTurn(); return; }
+  S.busy = false;
+  renderControls();
+  saveGame();
 }
 
 function bank(){
@@ -3000,6 +2905,7 @@ function nextPlayer(){
 }
 
 function endGame(p){
+  if (NET.on) setTimeout(() => netTeardown(true), 400);
   const gen = S.gen;
   S.over = true; S.busy = false;
   clearSave();
@@ -3040,50 +2946,6 @@ function scorePop(text, negative, anchorEl){
   el.textContent = text;
   document.body.appendChild(el);
   const w = el.offsetWidth;
-  if (document.body.classList.contains('h2h')){
-    // above the active player's panel, centered on their Total column
-    const m = $('#mini' + S.cur).getBoundingClientRect();
-    const t = $('#mini' + S.cur + ' .mtv').getBoundingClientRect();
-    el.style.left = Math.max(4, Math.min(innerWidth - w - 4, t.left + t.width / 2 - w / 2)) + 'px';
-    if (S.cur === 0){
-      el.style.top = (m.top - 14) + 'px';
-    } else {
-      el.classList.add('h2p2');
-      el.style.top = (m.bottom + 14) + 'px';
-    }
-    requestAnimationFrame(() => el.classList.add('on'));
-    setTimeout(() => {
-      el.classList.remove('on');
-      el.classList.add('out');
-      setTimeout(() => el.remove(), 350);
-    }, 1500);
-    return;
-  }
-  if (document.body.classList.contains('tabletop')){
-    // work in landscape coords: x' = deviceY, y' = deviceWidth - deviceX
-    el.classList.add('tab');
-    const W = D3.viewW || innerHeight;
-    const ax = r.top + r.height / 2;                  // anchor center, landscape x
-    const ay = innerWidth - (r.left + r.width / 2);   // anchor center, landscape y
-    const lw = r.height;                              // anchor width in landscape
-    const side = S.cur === 0 ? -1 : 1;                // outward: P1 left, P2 right
-    let tx = ax + side * (lw / 2 + 10 + w / 2);
-    let ty = ay;
-    if (tx - w / 2 < 4 || tx + w / 2 > W - 4){
-      const bb = document.querySelector('.board').getBoundingClientRect();
-      ty = (innerWidth - bb.left) + 18;               // below the board
-      tx = Math.max(4 + w / 2, Math.min(W - 4 - w / 2, ax));
-    }
-    el.style.left = (innerWidth - ty) + 'px';         // back to device coords
-    el.style.top = tx + 'px';
-    requestAnimationFrame(() => el.classList.add('on'));
-    setTimeout(() => {
-      el.classList.remove('on');
-      el.classList.add('out');
-      setTimeout(() => el.remove(), 350);
-    }, 1500);
-    return;
-  }
   const fitsSide = S.players.length <= 2 && (S.cur === 0
     ? (r.left - 6 - w) >= 4
     : (r.right + 6 + w) <= innerWidth - 4);
